@@ -1,5 +1,4 @@
 # Overall
-> Last updated: 02 June 2025
 
 This README provides a brief overview of this project as well as the intermediate deliverables / timelines.
 
@@ -7,6 +6,8 @@ This README provides a brief overview of this project as well as the intermediat
 
 This internship project aims to develop a comprehensive and effective evaluation benchmark specifically designed for large multimodal models (LMMs). The benchmark will include a diverse set of tasks and datasets across the defence domain, ensuring a holistic assessment of the models’ strength and weaknesses in handling multimodal data in the defence domain.​
 
+## Sub task requirements
+An overview of the data requirements and elaboration of the subtasks will be provided in the [data requirements document](/data_requirements.md)
 
 ## Projected Timeline
 > More details regarding each portion will be in the README.md files in the respective directories
@@ -15,7 +16,6 @@ The internship has been split into a few different phases, with the projected ti
 
 ### Phase 1: Literature review (2 weeks)
 This phase involves literature review on multimodal data curation for evaluation benchmarks.
-
 
 ### Phase 2: Data Curation (2 weeks)
 This phase involves the curation of specific data for defence domain.

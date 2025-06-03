@@ -1,6 +1,4 @@
 # Literature Review
-> Last Updated: 03 June 2025
-
 > Literature review on multimodal data curation for evaluation benchmarks.
 
 The goal for this document is to list down relevant literature findings for the assigned problem (data curation for evaluation benchmarks)
@@ -48,7 +46,7 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
 
 
 ### 2. OCR (Optical Character Recognition) Data:
-> Honestly, just a lot of QA Frameworks for now
+> Honestly, just a lot of these QA Frameworks for now
 - DocVQA (Document Visual Question Answering)
     - Open-ended questions from provided document with ground-truth annotations
     - Link: https://www.docvqa.org/datasets
@@ -60,6 +58,14 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
 - ChartQA
     - Large-scale benchmark covering 9,600 human-written questions as well as 23,100 questions generated from human-written chart summaries
     - Link: https://arxiv.org/abs/2203.10244
+
+- IAM Handwriting
+    - 13,353 images of handwritten lines of text created by 657 writers
+    - Link: https://paperswithcode.com/dataset/iam
+
+- Handwriting Recognition (Names)
+    - 206,799 first names, 207,024 surnames
+    - Link: https://www.kaggle.com/datasets/ssarkar445/handwriting-recognitionocr
 
 
 ### 3. Counting Data
@@ -96,6 +102,7 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
     - Huge open-ended counting dataset, split into simple and complex (human-vetted), over 250,000 questions and 150,000 images
     - Differentiates between non-complex ("how many dogs are there") vs complex ("how many dogs are eating") counting questions (linguistics)
     - Introduces a new algorithm - Relational counting network which compares relationships between objects
+    - Link: https://arxiv.org/abs/1810.12440
     - Link: 
 
 - HowManyQA
@@ -156,7 +163,7 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
     - Quality estimation for machine-generated image captions using crowdsourced ratinga 
     - Link: https://github.com/google-research-datasets/Image-Caption-Quality-Dataset
 
-## Post-processing
+## Processing
 More information on this will be in `phase_3_dataset_handling/README.md`.
 
 To note: Some literature review regarding data filtering and data augmentation may be needed as well.
