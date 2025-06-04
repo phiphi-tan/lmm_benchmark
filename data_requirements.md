@@ -32,7 +32,7 @@ To ensure proper identification of the object, outputs should be annotated with 
 
 Counting refers to the task of identifying and counting specific objects within the given inputs.
 
-> Note: While traditionally object counting may be seen as a subset of [Object Detection](#1-object-detection), there are certain techniques that models may use to create more accurate answers than simply aggregating object detection counts.
+> Note: While traditionally object counting may be seen as a subset of [Object Detection](#1-object-detection), there are certain techniques that models may use to output more accurate predictions than simply aggregating object detection counts.
 
 #### Classes
 The dataset should encompass repetitive patterns, such as crowds, carparks and vehicle parades, and be able to identify and count objects within them.
@@ -44,7 +44,7 @@ The dataset should contain variations of object sizes and viewpoints (e.g. top-d
 The model should provide an exact count of objects within the provided input. Bounding boxes / region-based annotations / target points can also be provided if available.
 
 #### Sub-categories
-As seen from the [TallyQA study](https://arxiv.org/abs/1810.12440), counting problems can be mainly categories into two different sub-categories
+As seen from the [TallyQA study](https://arxiv.org/abs/1810.12440), counting problems can be mainly categorised into two different sub-categories
 
 1. Simple counting: *(i.e. "How many dogs are there?")*
 2. Complex counting: *(i.e. "How many dogs are eating?")*
@@ -67,10 +67,12 @@ The dataset should contain variations of machine-printed / hand-written text.
 The dataset should also span across different text orientations, font sizes and handwriting types.
 
 #### Annotation
-The model should provide transcriptions of the text in the input provided, as well as bounding boxes around text regions transcribed. There should also be selective multi-language type output as well.
+The model should provide transcriptions of the text from the input provided, as well as bounding boxes around text regions transcribed. There should also be selective multi-language type output as well.
 
 #### Sub-categories
-Possible sub-categories can include differentiating between machine-printed and handwritten text. 
+Possible sub-categories can include differentiating between machine-printed and handwritten text.
+
+Given the prevalence of English-based text datasets for OCR evaluations, we can split the dataset into English-based and 'other' languages, to primarily focus on benchmarking a model's OCR abilities in English.
 
 ### 4. Image Captioning
 Image captioning refers to the task of describing the content of a given image.

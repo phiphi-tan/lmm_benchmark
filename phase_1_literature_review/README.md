@@ -24,10 +24,7 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
     - Link: https://mmstar-benchmark.github.io/
 
 
-
-
 ### 1. Object Detection Data
-> Difficult to find military asset data
 - RF100 (Roboflow 100)
     - The datasets are splitted in 7 categories: Aerial, Videogames, Microscopic, Underwater, Documents, Electromagnetic and Real World
     - Link: https://github.com/roboflow/roboflow-100-benchmark
@@ -44,9 +41,49 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
     - 81 different military aircraft types
     - Link https://www.kaggle.com/datasets/a2015003713/militaryaircraftdetectiondataset
 
+- WeaponDetection
+    - 9 classes for detection: Automatic Rifle, Bazooka, Handgun, Knife, Grenade Launcher, Shotgun, SMG, Sniper, Sword
+    - Limitation: 714 images across all 9 classes
+    - Link: https://www.kaggle.com/datasets/snehilsanyal/weapon-detection-test/data
+
+- UAVDT (Unmanned Aerial Vehicle Benchmark Object Detection and Tracking)
+    - Contains images / video taken from UAVs, with data on altitude and 3 object views (front, side, bird)
+    - Link: https://paperswithcode.com/dataset/uavdt
+
+
+- LLVIP (A Visible-infrared Paired Dataset for Low-light Vision)
+    - Contains both low-light and infrared images meant for pedestrian detection
+    - Visible-infrared images are paired, but can be used independently (e.g. if we only want to benchmark models on low-light performance and not infrared)
+    - Link: https://bupt-ai-cz.github.io/LLVIP/
+    - Link: https://paperswithcode.com/dataset/llvip
+
 
 ### 2. OCR (Optical Character Recognition) Data:
-> Honestly, just a lot of these QA Frameworks for now
+
+- TextOCR
+    - Arbitrary-shaped scene text detection and recognition with 900k annotated words collected on real images from TextVQA dataset
+    - Link: https://paperswithcode.com/paper/textocr-towards-large-scale-end-to-end
+
+- OCR-IDL (OCR Annotations for Industry Document Library Dataset)
+    - OCR annotations for a subset of 26M pages of the large-scale industry documents library hosted by UCSF
+    - Link: https://paperswithcode.com/dataset/ocr-idl
+
+- IAM Handwriting
+    - 13,353 images of handwritten lines of text created by 657 writers
+    - Link: https://arxiv.org/pdf/2202.12985v1
+    - Link: https://paperswithcode.com/dataset/iam
+
+- Handwriting Recognition (Names)
+    - 206,799 first names, 207,024 surnames
+    - Link: https://www.kaggle.com/datasets/ssarkar445/handwriting-recognitionocr
+    
+- Natural
+    - 105,941 images of natural occuring text (e.g. road signs, menu, shop plaques) across 12 languages (Japanese, Korean, Indonesian, Malay, Vietnamese, Thai, French, German, Italian, Portuguese, Russian, Spanish)
+    - Link: https://paperswithcode.com/dataset/105941-images-natural-scenes-ocr-data-of-12
+
+> Potential use of VQAs to test model capability on processing + understanding?
+> Might not be as important as benchmark should focus more on the recognition of the text
+
 - DocVQA (Document Visual Question Answering)
     - Open-ended questions from provided document with ground-truth annotations
     - Link: https://www.docvqa.org/datasets
@@ -59,13 +96,7 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
     - Large-scale benchmark covering 9,600 human-written questions as well as 23,100 questions generated from human-written chart summaries
     - Link: https://arxiv.org/abs/2203.10244
 
-- IAM Handwriting
-    - 13,353 images of handwritten lines of text created by 657 writers
-    - Link: https://paperswithcode.com/dataset/iam
 
-- Handwriting Recognition (Names)
-    - 206,799 first names, 207,024 surnames
-    - Link: https://www.kaggle.com/datasets/ssarkar445/handwriting-recognitionocr
 
 
 ### 3. Counting Data
@@ -119,8 +150,13 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
     - Annotated with a dot at image approximate center
     - Link: https://paperswithcode.com/dataset/fsc147
 
+- CrowdHuman
+    - High diversity human detection dataset for crowd scenarios, over 20,000 images and 470,000 human instances
+    - Link: https://paperswithcode.com/dataset/crowdhuman
+
 - Crowd Counting (Video)
-    -  60,000 pedestrians were labelled in 2000 video frames (from a single public webcam)
+    - Not as robust due to single-origin input source
+    - 60,000 pedestrians were labelled in 2000 video frames (from a single public webcam)
     - Annotated via head labels
     - Link: https://www.kaggle.com/datasets/fmena14/crowd-counting
 
