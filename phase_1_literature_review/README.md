@@ -47,7 +47,7 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
     - Link: https://www.kaggle.com/datasets/snehilsanyal/weapon-detection-test/data
 
 - UAVDT (Unmanned Aerial Vehicle Benchmark Object Detection and Tracking)
-    - Contains images / video taken from UAVs, with data on altitude and 3 object views (front, side, bird)
+    - Contains images / video taken from UAVs, with data on altitude and 3 object views (front, side, bird's eye)
     - Link: https://paperswithcode.com/dataset/uavdt
 
 
@@ -67,6 +67,11 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
 - OCR-IDL (OCR Annotations for Industry Document Library Dataset)
     - OCR annotations for a subset of 26M pages of the large-scale industry documents library hosted by UCSF
     - Link: https://paperswithcode.com/dataset/ocr-idl
+
+- FUNSD (Form Understanding in Noisy Scanned Documents)
+    - 199 real, fully annotated, scanned forms
+    - Noisy and varied in appearance
+    - Link: https://paperswithcode.com/dataset/funsd
 
 - IAM Handwriting
     - 13,353 images of handwritten lines of text created by 657 writers
@@ -145,7 +150,7 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
     - Link: https://gdo152.llnl.gov/cowc/
     - Link: https://paperswithcode.com/dataset/cowc
 
-- FSC147
+- FSC147 (Few Shot Counting)
     - 147 object categories over 6000 images
     - Annotated with a dot at image approximate center
     - Link: https://paperswithcode.com/dataset/fsc147
@@ -196,7 +201,7 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
     - Link: https://arxiv.org/pdf/1712.07835
 
 - Google's Quality Estimation for Image Captions
-    - Quality estimation for machine-generated image captions using crowdsourced ratinga 
+    - Quality estimation for machine-generated image captions using crowdsourced ratings 
     - Link: https://github.com/google-research-datasets/Image-Caption-Quality-Dataset
 
 ## Processing
