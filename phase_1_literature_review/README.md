@@ -57,6 +57,8 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
     - Link: https://bupt-ai-cz.github.io/LLVIP/
     - Link: https://paperswithcode.com/dataset/llvip
 
+- Logos
+    - Link: https://paperswithcode.com/dataset/logo-2k
 
 ### 2. OCR (Optical Character Recognition) Data:
 
@@ -177,6 +179,7 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
     - Removes the need for any initial classifiers, and will output open-ended captions based on input image
     - Link: https://paperswithcode.com/paper/unconstrained-open-vocabulary-image
     - Link: https://arxiv.org/pdf/2407.11211v4
+    - Dataset: https://paperswithcode.com/dataset/novic-caption-object-data
 
 - MS COCO Captions
     - > Mentioned above in Object Detection.
