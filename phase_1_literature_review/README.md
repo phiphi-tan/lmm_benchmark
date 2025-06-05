@@ -88,6 +88,9 @@ There are 4 main sub-tasks essential for many downstream tasks, and hence curati
     - 105,941 images of natural occuring text (e.g. road signs, menu, shop plaques) across 12 languages (Japanese, Korean, Indonesian, Malay, Vietnamese, Thai, French, German, Italian, Portuguese, Russian, Spanish)
     - Link: https://paperswithcode.com/dataset/105941-images-natural-scenes-ocr-data-of-12
 
+- ChineseTextInTheWild
+    - Link: https://paperswithcode.com/dataset/chinese-text-in-the-wild
+
 > Potential use of VQAs to test model capability on processing + understanding?
 > Might not be as important as benchmark should focus more on the recognition of the text
 
