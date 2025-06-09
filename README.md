@@ -9,6 +9,9 @@ This internship project aims to develop a comprehensive and effective evaluation
 ## Sub task requirements
 An overview of the data requirements and elaboration of the subtasks will be provided in the [data requirements document](/data_requirements.md)
 
+## Notes
+- Look into document question answering
+
 ## Projected Timeline
 > More details regarding each portion will be in the README.md files in the respective directories
 

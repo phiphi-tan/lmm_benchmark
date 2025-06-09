@@ -1,6 +1,6 @@
 # https://huggingface.co/llava-hf/llava-onevision-qwen2-0.5b-ov-hf
-# "C:\Users\Tfaithfu\AppData\Local\Programs\Python\Python313\python.exe"
 # https://huggingface.co/datasets/TrainingDataPro/crowd-counting-dataset
+
 from transformers import pipeline
 from datasets import load_dataset
 
