@@ -5,11 +5,13 @@ from transformers import pipeline
 from datasets import load_dataset
 from PIL import Image
 import io
+import evaluate
+exact_match_metric = evaluate.load("exact_match")
 
 ds = load_dataset("nimapourjafar/mm_tallyqa", split='train')
 shuffled_ds = ds.shuffle()
 
-num_samples_to_process = 3
+num_samples_to_process = 5
 ds_subset = shuffled_ds.select(range(num_samples_to_process))
 print(ds_subset)
 system_prompt = "You are an object counting tool. Your task is to estimate the number of objects in the provided image. "\
@@ -19,11 +21,14 @@ data_list = ds_subset['data']
 # only use the first QA for each image
 question_data_list = [x[1] for x in data_list]
 question_data_list = [q['data'] for q in question_data_list]
-print("Question List: {}".format(question_data_list))
+# print("Question List: {}".format(question_data_list))
 
 answer_data_list = [x[2] for x in data_list]
 answer_data_list = [q['data'] for q in answer_data_list]
 print("Answer List: {}".format(answer_data_list))
+# remove the '.' at the end of the answers
+answer_data_list = [s[:-1] for s in answer_data_list]
+# print("Answer List: {}".format(answer_data_list))
 
 reference_list = []
 
@@ -60,7 +65,9 @@ for i, entry in enumerate(ds_subset):
     prediction_list[i] = prediction
 
     
-# for i in range(num_samples_to_process):
-#     print("Sample {}".format(i))
-#     print("Generated Count: {}".format(prediction_list[i]))
-#     print("Reference Count: {}".format(reference_list[i]))
+
+print("Predicted values: {}".format(prediction_list))
+print("Actual values: {}".format(reference_list))
+
+results = exact_match_metric.compute(references=reference_list, predictions=prediction_list)
+print("Exact Match Rate: {}".format(round(results["exact_match"], 2)))
