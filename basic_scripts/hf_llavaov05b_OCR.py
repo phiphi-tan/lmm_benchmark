@@ -1,5 +1,5 @@
 # https://huggingface.co/llava-hf/llava-onevision-qwen2-0.5b-ov-hf
-# https://huggingface.co/datasets/TrainingDataPro/crowd-counting-dataset
+# https://huggingface.co/datasets/MiXaiLL76/TextOCR_OCR
 
 from transformers import pipeline
 from datasets import load_dataset

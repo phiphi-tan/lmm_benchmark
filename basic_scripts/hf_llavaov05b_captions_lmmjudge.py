@@ -23,7 +23,7 @@ judge_score_template = "Your task is to evaluate and rate the candidate caption 
 "1.0: The caption accurately and clearly describes the image." \
 "Reference Captions: {ref}" \
 "Candidate Caption: {cand}" \
-"Score (Choose a rating from 0.0 to 1.0): " \
+"Score (Choose a rating from 0.0 to 1.0): "
 
 judge_followup_prompt = "Why? Tell me the reason."
 
