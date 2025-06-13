@@ -1,4 +1,4 @@
-from benchmark_tools import run_benchmark, eval_results, judge_captions
+from util.benchmark_tools import run_benchmark, eval_results, judge_captions
 from datasets import load_dataset
 from PIL import Image
 import io

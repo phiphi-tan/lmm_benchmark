@@ -1,18 +1,18 @@
-from benchmark_tools import run_benchmark, eval_results
+from util.benchmark_tools import run_benchmark
+import util.benchmark_models as benchmark_models
 from datasets import load_dataset
-from PIL import Image
-import io
 
 #----- hyperparameters -----
 
-model_name = "llava-hf/llava-onevision-qwen2-0.5b-ov-hf"
+models = benchmark_models.get_models()
+
 dataset_path = "Mr-Fox-h/Civil_or_Military"
 dataset_split = "train"
 sample_size = 3
 
 system_prompt = "You are a military aircraft classification tool. Your ONLY function is to classify aircraft images as either civilian (0) or military (1)."\
 "Return ONLY the single digit classification without ANY additional text, explanation, or formatting.\n"
-user_prompt = "Classify this aircraft image. Output ONLY a single digit: 0 for civilian aircraft or 1 for military aircraft. Do not include any other text or explanation."
+global_user_prompt = "Classify this aircraft image. Output ONLY a single digit: 0 for civilian aircraft or 1 for military aircraft. Do not include any other text or explanation."
 
 metric_type = "exact_match"
 
@@ -38,18 +38,17 @@ def prep_data(ds_path, ds_split, split_size=None):
 #----- benchmarks -----
 # DO NOT EDIT
 
-image_list, question_list, reference_list = prep_data(ds_path=dataset_path,
-                                                      ds_split=dataset_split,
-                                                      split_size=sample_size)
-print("image_list: {}".format(image_list))
-print("question_list: {}".format(question_list))
-print("reference_list: {}".format(reference_list))
+inputs = prep_data(ds_path=dataset_path, ds_split=dataset_split, split_size=sample_size)
+predictions, evaluations = run_benchmark(models=models, inputs=inputs, sys_user_prompts=[system_prompt, global_user_prompt], metric_type=metric_type)
 
-prediction_list = run_benchmark(model=model_name,
-                                img_list=image_list, qn_list=question_list,
-                                data_size=sample_size, sys_prompt=system_prompt, global_user_prompt=user_prompt)
+print("question_list: {}".format(inputs[1]))
+print("reference_list: {}".format(inputs[2]))
 
-print("prediction_list: {}".format(prediction_list))
+print("Benchmark Results:")
+for key, val in evaluations.items():
+    print("{}: {} ({})".format(key, predictions[key], val))
+    
 
-eval_results(img_list=image_list, qn_list=question_list, pred_list=prediction_list, ref_list=reference_list,
-            data_size=sample_size, metric_type=metric_type)
+
+
+    
