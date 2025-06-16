@@ -3,6 +3,10 @@ import evaluate
 
 # split inputs according to prep_data output
 def split_inputs(inputs):
+    print("Image list: {}".format(inputs[0]))
+    print("Question list: {}".format(inputs[1]))
+    print("Reference list: {}".format(inputs[2]))
+
     return inputs[0], inputs[1], inputs[2]
 
 # split prompts into system and user prompts
@@ -37,8 +41,10 @@ def run_benchmark(models, inputs, sys_user_prompts, metric_type):
 
 # returns output_list
 def get_predictions(model, img_list, qn_list, sys_prompt, global_user_prompt=None):
+    print("Obtaining predictions from {}".format(model))
+    pipe = pipeline("image-text-to-text", model=model, trust_remote_code=True)
+    pipe.model.config.pad_token_id = pipe.tokenizer.eos_token_id
 
-    pipe = pipeline("image-text-to-text", model=model, )
     data_size = len(img_list)
     prediction_list = [None for _ in range(data_size)]
 
@@ -63,13 +69,18 @@ def get_predictions(model, img_list, qn_list, sys_prompt, global_user_prompt=Non
                     return_full_text=False)
 
         prediction = output[0]['generated_text']
+        
+        # REMOVE punctuation coz models dont follow instructions
+        # Remove trailing / leading spaces
+        prediction = prediction.replace(".","").strip()
+
         prediction_list[i] = prediction
 
     return prediction_list
 
 # returns evaluation result
 def eval_results(img_list, qn_list, ref_list, pred_list, metric_type, breakdown=False):
-
+    print("Evaluating predictions")
     eval_metric = evaluate.load(metric_type)
     data_size = len(img_list)
     if breakdown is True:
@@ -146,3 +157,23 @@ def judge_captions(model, img_list, ref_list, cand_list, data_size):
         reason_list[i] = judge_reason
                        
     return score_list, reason_list
+
+# for Colab
+def show_individual(inputs, predictions):
+    img_list, qn_list, ref_list = split_inputs(inputs)
+    if len(qn_list) == 0: # only global questions, no individual
+        qn_list = ["" for _ in img_list]
+
+    for i in range(len(img_list)):
+        display(img_list[i])
+        print("Question: {}".format(qn_list[i]))
+        print("Truth: {}".format(ref_list[i]))
+        for key, val in predictions.items():
+            print("Predicted ({}): {}".format(key, val[i]))
+
+def show_results(inputs, predictions, evaluations):
+    _, _, ref_list = split_inputs(inputs)
+    print("Benchmark Results:")
+    print("Truth: {}".format(ref_list))
+    for key, val in evaluations.items():
+        print("{}: {} ({})".format(key, val, predictions[key]))
