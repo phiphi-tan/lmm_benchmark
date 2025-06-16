@@ -8,16 +8,20 @@ models = benchmark_models.get_models()
 dataset_path = "MiXaiLL76/TextOCR_OCR"
 dataset_split = "train"
 sample_size = 2
+data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "You are an ___ tool. Your ONLY function is to process the text given in the attached image."\
 "Do not provide any explanation or introductory text."
 global_user_prompt = None # set to None if passing individual prompts
+sys_user_prompt = [system_prompt, global_user_prompt]
+
 metric_type = "exact_match"
 
 #----- data preparation function -----
 
 # must return input images (PIL), question list, reference list
 def prep_data(ds_path, ds_split, split_size=None):
+    print("Preparing data with size: {}".format(split_size))
     ds = load_dataset(ds_path, split=ds_split)
     input_dataset = None
 
@@ -27,18 +31,27 @@ def prep_data(ds_path, ds_split, split_size=None):
     else: 
         input_dataset = ds
 
+    raise NotImplementedError
     image_list = [] # get list of images
     question_data_list = [] # get list of questions (if necessary)
     ref_data_list = [] # get list of answers
 
     return image_list, question_data_list, ref_data_list 
 
+def edit_predictions(predictions):
+    new_predictions = predictions.copy()
+
+    raise NotImplementedError
+    for model in predictions:
+        pred = predictions[model]
+    return new_predictions
+
 #----- benchmarks -----
 # DO NOT EDIT
 
-inputs = prep_data(ds_path=dataset_path, ds_split=dataset_split, split_size=sample_size)
-predictions, evaluations = run_benchmark(models=models, inputs=inputs, sys_user_prompts=[system_prompt, global_user_prompt], metric_type=metric_type)
-
+inputs, predictions, evaluations = run_benchmark(prep_data=prep_data, data_info=data_info,
+                                                models=models, sys_user_prompts=sys_user_prompt,
+                                                edit_predictions=edit_predictions, metric_type=metric_type)
 # show_individual(inputs, predictions)
 show_results(inputs, predictions, evaluations)
 

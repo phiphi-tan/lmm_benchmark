@@ -9,10 +9,12 @@ models = benchmark_models.get_models()
 dataset_path = "Mr-Fox-h/Civil_or_Military"
 dataset_split = "train"
 sample_size = 3
+data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "You are a military aircraft classification tool. Your ONLY function is to classify aircraft images as either civilian (0) or military (1)."\
 "Return ONLY the single digit classification without ANY additional text, explanation, or formatting.\n"
-global_user_prompt = "Classify this aircraft image. Output ONLY a single digit: 0 for civilian aircraft or 1 for military aircraft. Do not include any other text or explanation."
+global_user_prompt = "Classify this aircraft image. Output ONLY a single digit: 0 for civilian aircraft or 1 for military aircraft.  Give the shortest answer possible. Do not include any other text or explanation."
+sys_user_prompt = [system_prompt, global_user_prompt]
 
 metric_type = "exact_match"
 
@@ -35,14 +37,25 @@ def prep_data(ds_path, ds_split, split_size=None):
 
     return image_list, question_data_list, answer_data_list 
 
+def edit_predictions(predictions):
+    new_predictions = predictions.copy()
+
+    for model in predictions:
+        if model != 'HuggingFaceTB/SmolVLM-256M-Instruct': continue
+        
+        pred = predictions[model]
+        new_predictions[model+' (edited)'] = [p.replace(".", "").strip() for p in pred]
+    return new_predictions
+
 #----- benchmarks -----
 # DO NOT EDIT
 
-inputs = prep_data(ds_path=dataset_path, ds_split=dataset_split, split_size=sample_size)
-predictions, evaluations = run_benchmark(models=models, inputs=inputs, sys_user_prompts=[system_prompt, global_user_prompt], metric_type=metric_type)
-
-show_individual(inputs, predictions)
+inputs, predictions, evaluations = run_benchmark(prep_data=prep_data, data_info=data_info,
+                                                models=models, sys_user_prompts=sys_user_prompt,
+                                                edit_predictions=edit_predictions, metric_type=metric_type)
+# show_individual(inputs, predictions)
 show_results(inputs, predictions, evaluations)
+
 
 
 

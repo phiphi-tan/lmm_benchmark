@@ -1,4 +1,4 @@
-from util.benchmark_tools import run_benchmark
+from util.benchmark_tools import run_benchmark, show_individual, show_results
 import util.benchmark_models as benchmark_models
 from datasets import load_dataset
 
@@ -9,10 +9,12 @@ models = benchmark_models.get_models()
 dataset_path = "Naveengo/flickr8k"
 dataset_split = "train"
 sample_size = 3
+data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "You are an image caption tool. Your task is generate captions for a given input image."\
 "Do not provide any explanation or introductory text, or anything other than what is shown."
 global_user_prompt = "Analyze the image and respond ONLY with a caption."
+sys_user_prompt = [system_prompt, global_user_prompt]
 
 metric_type = "llm_aaj"
 
@@ -34,16 +36,21 @@ def prep_data(ds_path, ds_split, split_size=None):
 
     return image_list, question_data_list, answer_data_list 
 
+def edit_predictions(predictions):
+    new_predictions = predictions.copy()
+
+    raise NotImplementedError
+    for model in predictions:
+        pred = predictions[model]
+    return new_predictions
+
+
 #----- benchmarks -----
 # DO NOT EDIT
 
-inputs = prep_data(ds_path=dataset_path, ds_split=dataset_split, split_size=sample_size)
-predictions, evaluations = run_benchmark(models=models, inputs=inputs, sys_user_prompts=[system_prompt, global_user_prompt], metric_type=metric_type)
-
-print("question_list: {}".format(inputs[1]))
-print("reference_list: {}".format(inputs[2]))
-
-print("Benchmark Results:")
-for key, val in evaluations.items():
-    print("{}: {} ({})".format(key, predictions[key], val))
+inputs, predictions, evaluations = run_benchmark(prep_data=prep_data, data_info=data_info,
+                                                models=models, sys_user_prompts=sys_user_prompt,
+                                                metric_type=metric_type)
+# show_individual(inputs, predictions)
+show_results(inputs, predictions, evaluations)
     

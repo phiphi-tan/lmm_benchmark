@@ -14,7 +14,11 @@ def split_prompts(sys_user_prompts):
     return sys_user_prompts[0], sys_user_prompts[1]
 
 # runs get_predictions and eval_results; returns predictions and evaluations
-def run_benchmark(models, inputs, sys_user_prompts, metric_type):
+def run_benchmark(prep_data, data_info, models, sys_user_prompts, metric_type, edit_predictions=None):
+
+    dataset_path, dataset_split, sample_size = data_info
+    inputs = prep_data(ds_path=dataset_path, ds_split=dataset_split, split_size=sample_size)
+
     num_of_models = len(models)
     predictions = {}
     model_results = {}
@@ -27,9 +31,13 @@ def run_benchmark(models, inputs, sys_user_prompts, metric_type):
         prediction_list = get_predictions(model=model, img_list=img_list, qn_list=qn_list,
                                           sys_prompt=sys_prompt, global_user_prompt=user_prompt)
         predictions[model] = prediction_list
-
         print("prediction_list ({}): {}".format(model, prediction_list))
 
+    if edit_predictions is not None:
+        predictions = edit_predictions(predictions)
+
+    for model in predictions:
+        prediction_list = predictions[model]
         if metric_type == "llm_aaj":
             evaluation = judge_captions(model, img_list, ref_list, prediction_list)
         else:
@@ -39,9 +47,7 @@ def run_benchmark(models, inputs, sys_user_prompts, metric_type):
         model_results[model] = evaluation
         print("evaluation ({}): {}".format(model, evaluation))
 
-    return predictions, model_results
-
-
+    return inputs, predictions, model_results
 
 # returns output_list
 def get_predictions(model, img_list, qn_list, sys_prompt, global_user_prompt=None):
@@ -73,11 +79,6 @@ def get_predictions(model, img_list, qn_list, sys_prompt, global_user_prompt=Non
                     return_full_text=False)
 
         prediction = output[0]['generated_text']
-        
-        # REMOVE punctuation coz models dont follow instructions
-        # Remove trailing / leading spaces
-        prediction = prediction.replace(".","").strip()
-
         prediction_list[i] = prediction
 
     return prediction_list

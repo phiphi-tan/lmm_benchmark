@@ -5,7 +5,7 @@ models = [
             # "google/gemma-3-4b-it",
             # "Qwen/Qwen2.5-VL-3B-Instruct",
             # "Qwen/Qwen2-VL-2B-Instruct",
-            # "llava-hf/llava-onevision-qwen2-0.5b-ov-hf",
+            "llava-hf/llava-onevision-qwen2-0.5b-ov-hf",
             "HuggingFaceTB/SmolVLM-256M-Instruct",
           ]
 

@@ -12,10 +12,13 @@ models = benchmark_models.get_models()
 dataset_path = "moondream/TallyQA-VLMEvalKit"
 dataset_split = "train"
 sample_size = 3
+data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "You are an object counting tool. Your task is to estimate the number of objects in the provided image. "\
-"Analyze the image and respond ONLY with a single number (no full stops). Do not provide any explanation or introductory text or punctuation."
+"Analyze the image and respond ONLY with a single number. Do not provide any explanation or introductory text or punctuation."
 global_user_prompt = None
+sys_user_prompt = [system_prompt, global_user_prompt]
+
 metric_type = "exact_match"
 
 #----- data preparation function -----
@@ -42,12 +45,25 @@ def prep_data(ds_path, ds_split, split_size=None):
 
     return image_list, question_list, answer_list 
 
-#----- benchmarks -----
+# change if the output from the model needs to be edited
+def edit_predictions(predictions):
+    new_predictions = predictions.copy()
+
+    for model in predictions:
+        pred = predictions[model]
+        # REMOVE punctuation coz models dont follow instructions
+        # Remove trailing / leading spaces
+        if model != 'HuggingFaceTB/SmolVLM-256M-Instruct': continue
+
+        new_predictions[model+' (edited)'] = [p.replace(".", "").strip() for p in pred]
+    return new_predictions
+
+#----- benchmarks call -----
 # DO NOT EDIT
 
-
-inputs = prep_data(ds_path=dataset_path, ds_split=dataset_split, split_size=sample_size)
-predictions, evaluations = run_benchmark(models=models, inputs=inputs, sys_user_prompts=[system_prompt, global_user_prompt], metric_type=metric_type)
+inputs, predictions, evaluations = run_benchmark(prep_data=prep_data, data_info=data_info,
+                                                models=models, sys_user_prompts=sys_user_prompt,
+                                                edit_predictions=edit_predictions, metric_type=metric_type)
 # show_individual(inputs, predictions)
 show_results(inputs, predictions, evaluations)
 
