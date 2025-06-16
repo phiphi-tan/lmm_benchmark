@@ -1,22 +1,20 @@
-from util.benchmark_tools import run_benchmark, eval_results, judge_captions
+from util.benchmark_tools import run_benchmark
+import util.benchmark_models as benchmark_models
 from datasets import load_dataset
-from PIL import Image
-import io
 
 #----- hyperparameters -----
 
-model_name = "llava-hf/llava-onevision-qwen2-0.5b-ov-hf"
+models = benchmark_models.get_models()
+
 dataset_path = "Naveengo/flickr8k"
 dataset_split = "train"
-sample_size = 1
+sample_size = 3
 
 system_prompt = "You are an image caption tool. Your task is generate captions for a given input image."\
 "Do not provide any explanation or introductory text, or anything other than what is shown."
-user_prompt = "Analyze the image and respond ONLY with a caption."
+global_user_prompt = "Analyze the image and respond ONLY with a caption."
 
-
-
-metric_type = "exact_match"
+metric_type = "llm_aaj"
 
 #----- data preparation function -----
 
@@ -39,22 +37,13 @@ def prep_data(ds_path, ds_split, split_size=None):
 #----- benchmarks -----
 # DO NOT EDIT
 
-image_list, question_list, reference_list = prep_data(ds_path=dataset_path,
-                                                      ds_split=dataset_split,
-                                                      split_size=sample_size)
-print("image_list: {}".format(image_list))
-print("question_list: {}".format(question_list))
-print("reference_list: {}".format(reference_list))
+inputs = prep_data(ds_path=dataset_path, ds_split=dataset_split, split_size=sample_size)
+predictions, evaluations = run_benchmark(models=models, inputs=inputs, sys_user_prompts=[system_prompt, global_user_prompt], metric_type=metric_type)
 
-prediction_list = run_benchmark(model=model_name,
-                                img_list=image_list, qn_list=question_list,
-                                data_size=sample_size, sys_prompt=system_prompt, global_user_prompt=user_prompt)
-print("prediction_list: {}".format(prediction_list))
+print("question_list: {}".format(inputs[1]))
+print("reference_list: {}".format(inputs[2]))
 
-score_list, reason_list = judge_captions(model=model_name, img_list=image_list, cand_list=prediction_list, ref_list=reference_list,
-                      data_size=sample_size)
-print("score_list: {}".format(score_list))
-print("reason_list: {}".format(reason_list))
-
-eval_results(img_list=image_list, qn_list=question_list, pred_list=prediction_list, ref_list=reference_list,
-            data_size=sample_size, metric_type=metric_type)
+print("Benchmark Results:")
+for key, val in evaluations.items():
+    print("{}: {} ({})".format(key, predictions[key], val))
+    

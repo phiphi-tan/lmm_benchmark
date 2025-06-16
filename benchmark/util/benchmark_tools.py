@@ -26,8 +26,12 @@ def run_benchmark(models, inputs, sys_user_prompts, metric_type):
 
         print("prediction_list ({}): {}".format(model, prediction_list))
 
-        evaluation = eval_results(img_list=img_list, qn_list=qn_list, ref_list=ref_list,
+        if metric_type == "llm_aaj":
+            evaluation = judge_captions(model, img_list, ref_list, prediction_list)
+        else:
+            evaluation = eval_results(img_list=img_list, qn_list=qn_list, ref_list=ref_list,
                                   pred_list=prediction_list, metric_type=metric_type)
+            
         model_results[model] = evaluation
         print("evaluation ({}): {}".format(model, evaluation))
 
@@ -87,7 +91,7 @@ def eval_results(img_list, qn_list, ref_list, pred_list, metric_type, breakdown=
     return return_result
 
 # two-pass, returns both the scores as well as reasoning
-def judge_captions(model, img_list, ref_list, cand_list, data_size):
+def judge_captions(model, img_list, ref_list, cand_list):
 
     data_size = len(img_list)
 
