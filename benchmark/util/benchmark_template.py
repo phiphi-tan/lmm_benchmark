@@ -1,4 +1,4 @@
-from util.benchmark_tools import run_benchmark
+from util.benchmark_tools import run_benchmark, show_individual, show_results
 import benchmark.util.benchmark_models as benchmark_models
 from datasets import load_dataset
 
@@ -39,10 +39,7 @@ def prep_data(ds_path, ds_split, split_size=None):
 inputs = prep_data(ds_path=dataset_path, ds_split=dataset_split, split_size=sample_size)
 predictions, evaluations = run_benchmark(models=models, inputs=inputs, sys_user_prompts=[system_prompt, global_user_prompt], metric_type=metric_type)
 
-print("question_list: {}".format(inputs[1]))
-print("reference_list: {}".format(inputs[2]))
+# show_individual(inputs, predictions)
+show_results(inputs, predictions, evaluations)
 
-print("Benchmark Results:")
-for key, val in evaluations.items():
-    print("{}: {} ({})".format(key, predictions[key], val))
     

@@ -1,4 +1,4 @@
-from util.benchmark_tools import run_benchmark
+from util.benchmark_tools import run_benchmark, show_individual, show_results
 import util.benchmark_models as benchmark_models
 from datasets import load_dataset
 
@@ -7,7 +7,7 @@ models = benchmark_models.get_models()
 
 dataset_path = "MiXaiLL76/TextOCR_OCR"
 dataset_split = "train"
-sample_size = 2
+sample_size = 10
 
 system_prompt = "You are an optical character recognition (OCR) tool. Your ONLY function is to process an input image and output the text shown."\
 "Do not provide any explanation or introductory text."
@@ -17,7 +17,7 @@ metric_type = "exact_match"
 
 # must return input images (PIL), question list, reference list
 def prep_data(ds_path, ds_split, split_size=None):
-    ds = load_dataset(ds_path, split=ds_split)
+    ds = load_dataset(ds_path, split=ds_split, streaming=True)
 
     if split_size is not None:
         shuffled_ds = ds.shuffle() # for random selection
@@ -37,11 +37,6 @@ def prep_data(ds_path, ds_split, split_size=None):
 inputs = prep_data(ds_path=dataset_path, ds_split=dataset_split, split_size=sample_size)
 predictions, evaluations = run_benchmark(models=models, inputs=inputs, sys_user_prompts=[system_prompt, global_user_prompt], metric_type=metric_type)
 
-print("question_list: {}".format(inputs[1]))
-print("reference_list: {}".format(inputs[2]))
-
-print("Benchmark Results:")
-for key, val in evaluations.items():
-    print("{}: {} ({})".format(key, predictions[key], val))
-    
+# show_individual(inputs, predictions)
+show_results(inputs, predictions, evaluations)
 

@@ -1,4 +1,4 @@
-from util.benchmark_tools import run_benchmark
+from util.benchmark_tools import run_benchmark, show_individual, show_results
 import util.benchmark_models as benchmark_models
 from datasets import load_dataset
 from PIL import Image
@@ -6,14 +6,14 @@ import io
 
 #----- hyperparameters -----
 
-models = benchmark_models.get_models()
+models = benchmark_models.get_models() # remove for Colab
 
 dataset_path = "nimapourjafar/mm_tallyqa"
 dataset_split = "train"
 sample_size = 3
 
 system_prompt = "You are an object counting tool. Your task is to estimate the number of objects in the provided image. "\
-"Analyze the image and respond ONLY with a single number (no full stops). Do not provide any explanation or introductory text or punctuation."
+"Analyze the image and respond ONLY with a single number. Do not provide any explanation or introductory text or punctuation."
 global_user_prompt = None
 metric_type = "exact_match"
 
@@ -21,6 +21,7 @@ metric_type = "exact_match"
 
 # must return input images (PIL), question list, reference list
 def prep_data(ds_path, ds_split, split_size=None):
+    print("Preparing data with size: {}".format(split_size))
     ds = load_dataset(ds_path, split=ds_split)
 
     if split_size is not None:
@@ -49,10 +50,6 @@ def prep_data(ds_path, ds_split, split_size=None):
 inputs = prep_data(ds_path=dataset_path, ds_split=dataset_split, split_size=sample_size)
 predictions, evaluations = run_benchmark(models=models, inputs=inputs, sys_user_prompts=[system_prompt, global_user_prompt], metric_type=metric_type)
 
-print("question_list: {}".format(inputs[1]))
-print("reference_list: {}".format(inputs[2]))
-
-print("Benchmark Results:")
-for key, val in evaluations.items():
-    print("{}: {} ({})".format(key, predictions[key], val))
+# show_individual(inputs, predictions)
+show_results(inputs, predictions, evaluations)
 
