@@ -51,6 +51,6 @@ def edit_predictions(predictions):
 inputs, predictions, evaluations = run_benchmark(prep_data=prep_data, data_info=data_info,
                                                 models=models, sys_user_prompts=sys_user_prompt,
                                                 metric_type=metric_type)
-# show_individual(inputs, predictions)
+show_individual(inputs, predictions, judge_evaluations=evaluations)
 show_results(inputs, predictions, evaluations)
     
