@@ -1,10 +1,15 @@
 # Benchmark Results
 This details the initial results found from the testing of different models
 
+> Note: The models used are of a relatively small size
 
 ## Object Counting
 ### Dataset
 The dataset comprises of images from TallyQA
+
+### Evaluation
+The evaluation metric used is exact match, and will directly compare the output from the model against the reference answers given in the dataset
+
 ### Results
 
 Initial testing on a small batch of 10 had mixed results. In general the model trained with higher parameters (i.e. Qwen2-2B) performed better. However, many runs had the smaller SmolVLM-256M model performing better than Llava-OV-0.5B
@@ -36,6 +41,11 @@ HuggingFaceTB/SmolVLM-256M-Instruct: 0.79
 ### Dataset
 The dataset comprises of simple straightforward images of text, taken from TextOCR
 
+### Evaluation
+The evaluation metric used is exact match, and will directly compare the output from the model against the reference answers given in the dataset.
+
+A non-exact (case insensitive) metric was manually calculated for the smaller batch of 10
+
 ### Results
 > I had to manually edit the output of the SmolVLM-256M model to remove any punctuation and leading/trailing whitespaces. Without which the performance would be 0.
 
@@ -49,7 +59,6 @@ Qwen/Qwen2-VL-2B-Instruct: 0.3
 Qwen/Qwen2-VL-2B-Instruct (case-insensitive): 0.9
 llava-hf/llava-onevision-qwen2-0.5b-ov-hf: 0.6
 llava-hf/llava-onevision-qwen2-0.5b-ov-hf (case-insensitive): 0.7
-
 HuggingFaceTB/SmolVLM-256M-Instruct: 0.4
 
 ```
@@ -88,5 +97,19 @@ Qwen/Qwen2-VL-2B-Instruct: 0.2
 llava-hf/llava-onevision-qwen2-0.5b-ov-hf: 0.4
 HuggingFaceTB/SmolVLM-256M-Instruct: 0.32
 ```
+
+## Object Detection (Pedestrians in Fog)
+### Dataset
+The dataset comprises of images of pedestrians
+
+### Results
+
+
+```
+
+```
+
+
+
 
 ## Conclusion

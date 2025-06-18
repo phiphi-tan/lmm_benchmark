@@ -25,10 +25,13 @@ Due to the huggingface pipeline architecture used, there are currently a limited
 
 ```py
 models = [
-            "mistralai/Mistral-7B-v0.3",
-            "llava-hf/llava-onevision-qwen2-0.5b-ov-hf",
-            "Qwen/Qwen2-VL-2B-Instruct",
+            "google/gemma-3-12b-it",
+            "llava-hf/llava-onevision-qwen2-7b-ov-hf",
+            "Qwen/Qwen2.5-VL-7B-Instruct",
+            "google/gemma-3-4b-it",
             "Qwen/Qwen2.5-VL-3B-Instruct",
+            "Qwen/Qwen2-VL-2B-Instruct",
+            "llava-hf/llava-onevision-qwen2-0.5b-ov-hf",
             "HuggingFaceTB/SmolVLM-256M-Instruct",
           ]
 ```
@@ -37,15 +40,9 @@ models = [
 
 Each file contains a dataset prepared for a certain task. Given that the structure of datasets are non-consistent, I found it necessary to include a `prep_data()` function in the template to allow users to structure their data in a standardised foramat (`image_list, question_data_list, answer_data_list`) that can be passed into the benchmark tool.
 
-### Benchmarking
+### Benchmarking Results
 
-#### Object Detection
-
-#### Optical Character Recognition
-
-#### Object Counting
-
-#### Image Captions
+The detailed list of benchmarks obtained so far can be viewed [here](benchmark_results.md)
 
 ## Prompt Approaches
 

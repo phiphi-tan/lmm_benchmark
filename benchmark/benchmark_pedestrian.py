@@ -1,20 +1,20 @@
-from util.benchmark_tools import run_benchmark, show_individual, show_results, draw_bboxes
+from util.benchmark_tools import run_benchmark
+from util.displays import show_individual, show_differences, show_results
 import util.benchmark_models as benchmark_models
-from util.displays import show_differences
 import ast
 from datasets import load_dataset
 
 #----- hyperparameters -----
 models = benchmark_models.get_models()
 
-dataset_path = "KIRANKALLA/weaponds"
+dataset_path = "Maxim37/hazy-pedestrian-detection"
 dataset_split = "train"
 sample_size = 3
 data_info = [dataset_path, dataset_split, sample_size]
 
-system_prompt = "You are a weapon detection tool tool. Your ONLY function is to provide the normalised coordinates of detected weapons in a corner-coordinates bounding box format."\
+system_prompt = "You are a pedestrian detection tool tool. Your ONLY function is to provide the coordinates of detected pedestrians in a corner-coordinates bounding box format."\
 "Do not provide any explanation or introductory text."
-global_user_prompt = "Analyze the image and respond with ONLY the normalised corner-coordinates of the weapon in square brackets ONLY. Give the shortest answer possible." # set to None if passing individual prompts
+global_user_prompt = "Analyze the image and respond with ONLY the corner-coordinates of pedestrians in square brackets ONLY. Give the shortest answer possible." # set to None if passing individual prompts
 sys_user_prompt = [system_prompt, global_user_prompt]
 
 metric_type = "bbox"
@@ -35,8 +35,7 @@ def prep_data(ds_path, ds_split, split_size=None):
 
     image_list = input_dataset['image'] # get list of images
     question_data_list = [] # get list of questions (if necessary)
-    ref_data_list = input_dataset['objects'] # get list of answers
-    ref_data_list = [r['bbox'] for r in ref_data_list]
+    ref_data_list = input_dataset['boxes'] # get list of answers
 
     print(input_dataset)
     print(image_list)
@@ -50,17 +49,10 @@ def edit_predictions(predictions):
     for model in predictions:
         pred = predictions[model]
         print(pred)
-        
-        new_pred = []
 
-        for p in pred:
-            try:
-                new_pred.append(ast.literal_eval(p))
-            except (SyntaxError):
-                new_pred.append(p)
-        
-        print(new_pred)
-        new_predictions[model] = new_pred
+        pred = [list(ast.literal_eval(p)) for p in pred]
+        print(pred)
+        new_predictions[model] = pred
 
     return new_predictions
 
@@ -71,7 +63,6 @@ inputs, predictions, evaluations = run_benchmark(prep_data=prep_data, data_info=
                                                 models=models, sys_user_prompts=sys_user_prompt,
                                                 edit_predictions=edit_predictions, metric_type=metric_type)
 show_results(inputs, predictions, evaluations)
-show_differences(inputs, predictions, input_normal=False)
-
+show_differences(inputs, predictions)
 
     
