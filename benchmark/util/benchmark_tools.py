@@ -2,6 +2,7 @@ from transformers import pipeline
 import evaluate
 from .judge import judge_captions
 from .bounding_boxes import eval_bbox
+import torch
 
 # split inputs according to prep_data output
 def split_inputs(inputs):
@@ -55,7 +56,7 @@ def run_benchmark(prep_data, data_info, models, sys_user_prompts, metric_type, e
 # returns output_list
 def get_predictions(model, img_list, qn_list, sys_prompt, global_user_prompt=None):
     print("Obtaining predictions from {}".format(model))
-    pipe = pipeline("image-text-to-text", model=model, trust_remote_code=True)
+    pipe = pipeline("image-text-to-text", model=model, trust_remote_code=True, torch_dtype=torch.bfloat16, device_map="auto")
     pipe.model.config.pad_token_id = pipe.tokenizer.eos_token_id
 
     data_size = len(img_list)
