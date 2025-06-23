@@ -2,6 +2,7 @@ from ..util.benchmark_tools import run_benchmark
 from ..util.displays import show_individual, show_differences, show_results
 from ..util.benchmark_models import get_models
 from datasets import load_dataset
+import torch
 
 #----- hyperparameters -----
 
@@ -9,7 +10,7 @@ models = get_models()
 
 dataset_path = "vikhyatk/tallyqa-test"
 dataset_split = "test"
-sample_size = 3
+sample_size = 64
 data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "You are an object counting tool, and you can ONLY reply in numbers "\
@@ -32,7 +33,7 @@ def prep_data(ds_path, ds_split, split_size=None):
     print("Filtered Dataset: {}".format(ds))
 
     if split_size is not None:
-        ds = ds.shuffle() # for random selection
+        # ds = ds.shuffle() # for random selection
         input_dataset = ds.select(range(split_size))
     else: 
         input_dataset = ds
