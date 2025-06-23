@@ -1,20 +1,19 @@
-from util.benchmark_tools import run_benchmark, show_individual, show_results
-import util.benchmark_models as benchmark_models
+from ..util.benchmark_tools import run_benchmark
+from ..util.displays import show_individual, show_differences, show_results
+from ..util.benchmark_models import get_models
 from datasets import load_dataset
-from PIL import Image
-import io
 
 #----- hyperparameters -----
 
-models = benchmark_models.get_models() # remove for Colab
+models = get_models()
 
-dataset_path = "nimapourjafar/mm_tallyqa"
-dataset_split = "train"
+dataset_path = "vikhyatk/tallyqa-test"
+dataset_split = "test"
 sample_size = 3
 data_info = [dataset_path, dataset_split, sample_size]
 
-system_prompt = "You are an object counting tool. Your task is to estimate the number of objects in the provided image. "\
-"Analyze the image and respond ONLY with a single number. Do not provide any explanation or introductory text or punctuation."
+system_prompt = "You are an object counting tool, and you can ONLY reply in numbers "\
+"Analyze the image and respond with ONLY a single number. Do not provide any explanation or introductory text."
 global_user_prompt = None
 sys_user_prompt = [system_prompt, global_user_prompt]
 
@@ -27,24 +26,26 @@ def prep_data(ds_path, ds_split, split_size=None):
     print("Preparing data with size: {}".format(split_size))
     ds = load_dataset(ds_path, split=ds_split)
 
+    print("Original Dataset: {}".format(ds))
+    # filter for simple questions
+    ds = ds.filter(lambda row: row["qa"][0]["is_simple"])
+    print("Filtered Dataset: {}".format(ds))
+
     if split_size is not None:
-        shuffled_ds = ds.shuffle() # for random selection
-        input_dataset = shuffled_ds.select(range(split_size))
+        ds = ds.shuffle() # for random selection
+        input_dataset = ds.select(range(split_size))
     else: 
         input_dataset = ds
 
-    image_list = input_dataset['images']
-    image_list = [img[0]['bytes'] for img in image_list]
-    image_list = [Image.open(io.BytesIO(b)) for b in image_list]
+    print("Sampled Dataset: {}".format(ds))
 
-    data_list = input_dataset['data']
-    question_data_list = [x[1] for x in data_list]
-    question_data_list = [q['data'] for q in question_data_list]
-    answer_data_list = [x[2] for x in data_list]
-    answer_data_list = [q['data'] for q in answer_data_list]
-    answer_data_list = [s[:-1] for s in answer_data_list]
+    image_list = input_dataset['image']
 
-    return image_list, question_data_list, answer_data_list 
+    qa_list = input_dataset['qa']
+    question_list = [q[0]["question"] for q in qa_list]
+    answer_list = [q[0]["answer"] for q in qa_list]
+
+    return image_list, question_list, answer_list 
 
 # change if the output from the model needs to be edited
 def edit_predictions(predictions):

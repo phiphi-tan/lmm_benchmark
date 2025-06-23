@@ -1,10 +1,11 @@
-from util.benchmark_tools import run_benchmark, show_individual, show_results
-import util.benchmark_models as benchmark_models
+from ..util.benchmark_tools import run_benchmark
+from ..util.displays import show_individual, show_differences, show_results
+from ..util.benchmark_models import get_models
 from datasets import load_dataset
 
 #----- hyperparameters -----
 
-models = benchmark_models.get_models()
+models = get_models()
 
 dataset_path = "Naveengo/flickr8k"
 dataset_split = "train"
