@@ -2,7 +2,6 @@ from ..util.benchmark_tools import run_benchmark
 from ..util.displays import show_individual, show_differences, show_results
 from ..util.benchmark_models import get_models
 from datasets import load_dataset
-import torch
 
 #----- hyperparameters -----
 

@@ -25,7 +25,7 @@ def prep_data(ds_path, ds_split, split_size=None):
     ds = load_dataset(ds_path, split=ds_split)
 
     if split_size is not None:
-        shuffled_ds = ds.shuffle() # for random selection
+        shuffled_ds = ds.shuffle(seed=split_size) # for random selection
         input_dataset = shuffled_ds.select(range(split_size))
     else: 
         input_dataset = ds

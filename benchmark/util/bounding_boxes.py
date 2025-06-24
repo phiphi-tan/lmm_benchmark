@@ -8,7 +8,7 @@ def fix_bbox(bbox):
     if x1 > x2:
         x1, x2 = x2, x1
     if y1 > y2:
-        y1, y2 = y2, y2
+        y1, y2 = y2, y1
     
     return [x1, y1, x2, y2]
 
@@ -18,7 +18,6 @@ def draw_bboxes(image, bbox_list, colour='red', label='', normalised=False):
     img_width, img_height = new_image.size
 
     for bbox in bbox_list:
-        bbox = fix_bbox(bbox)
         text_x = bbox[0]
         text_y = bbox[1]
 
@@ -33,18 +32,17 @@ def draw_bboxes(image, bbox_list, colour='red', label='', normalised=False):
 def eval_bbox(ref_list, img_list, pred_list):
     eval = []
     for i in range(len(ref_list)):
-        ref_bbox = ref_list[i][0]
-        ref_bbox = fix_bbox(ref_bbox)
+        ref_bbox = ref_list[i]
 
         img = img_list[i]
         img_width, img_height = img.size
 
-        pred_bbox = pred_list[i] # standardised values
+        pred_bbox = pred_list[i] # normalised values
+
         if not is_valid_bbox(pred_bbox):
             iou = 0
         else:
             pred_bbox = [pred_bbox[0]*img_width, pred_bbox[1]*img_height, pred_bbox[2]*img_width, pred_bbox[3]*img_height]
-            pred_bbox = fix_bbox(pred_bbox)
 
             iou = intersection_over_union(ref_bbox, pred_bbox)
             iou = round(iou, 2)
@@ -60,6 +58,7 @@ def is_valid_bbox(bbox):
         if not isinstance(x, float): return False
     return True
 
+# taken from LLM
 def intersection_over_union(boxA, boxB):
     xA = max(boxA[0], boxB[0])
     yA = max(boxA[1], boxB[1])
