@@ -10,7 +10,7 @@ models = get_models()
 
 dataset_path = "vikhyatk/tallyqa-test"
 dataset_split = "test"
-sample_size = 64
+sample_size = 1
 data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "You are an object counting tool, and you can ONLY reply in numbers "\
@@ -54,11 +54,7 @@ def edit_predictions(predictions):
 
     for model in predictions:
         pred = predictions[model]
-        # REMOVE punctuation coz models dont follow instructions
-        # Remove trailing / leading spaces
-        if model != 'HuggingFaceTB/SmolVLM-256M-Instruct': continue
-
-        new_predictions[model+' (edited)'] = [p.replace(".", "").strip() for p in pred]
+        new_predictions[model+' (stripped)'] = [p.strip() for p in pred]
     return new_predictions
 
 #----- benchmarks call -----

@@ -53,11 +53,7 @@ def edit_predictions(predictions):
 
     for model in predictions:
         pred = predictions[model]
-        # REMOVE punctuation coz models dont follow instructions
-        # Remove trailing / leading spaces
-        if model != 'HuggingFaceTB/SmolVLM-256M-Instruct': continue
-
-        new_predictions[model+' (edited)'] = [p.replace(".", "").strip() for p in pred]
+        new_predictions[model+' (stripped)'] = [p.strip() for p in pred]
     return new_predictions
 
 #----- benchmarks call -----
