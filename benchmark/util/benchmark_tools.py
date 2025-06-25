@@ -33,7 +33,7 @@ def run_benchmark(prep_data, data_info, models, sys_user_prompts, metric_type, e
 
     for i in range(num_of_models):
         model = models[i]
-        if model == "Qwen/Qwen2.5-Omni-7B":
+        if model == "Qwen/Qwen2.5-Omni-7B" or model == "Qwen/Qwen2.5-Omni-3B":
             prediction_list = get_omni_predictions(model, img_list, qn_list, sys_prompt, user_prompt)
         else:
             prediction_list = get_predictions(model=model, img_list=img_list, qn_list=qn_list,
@@ -58,16 +58,17 @@ def run_benchmark(prep_data, data_info, models, sys_user_prompts, metric_type, e
 
     return inputs, predictions, model_results
 
-def get_omni_predictions(model, img_list, qn_list, sys_prompt, global_user_prompt=None):
+def get_omni_predictions(model_name, img_list, qn_list, sys_prompt, global_user_prompt=None):
     # We recommend enabling flash_attention_2 for better acceleration and memory saving.
     model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
-        "Qwen/Qwen2.5-Omni-7B",
+        model_name,
         torch_dtype="auto",
         device_map="auto",
         attn_implementation="flash_attention_2",
     )
+    model.disable_talker()
 
-    processor = Qwen2_5OmniProcessor.from_pretrained("Qwen/Qwen2.5-Omni-7B")
+    processor = Qwen2_5OmniProcessor.from_pretrained(model_name)
 
     data_size = len(img_list)
     prediction_list = [None for _ in range(data_size)]
@@ -81,12 +82,25 @@ def get_omni_predictions(model, img_list, qn_list, sys_prompt, global_user_promp
         else:
             user_prompt = global_user_prompt
 
-        messages = [
+        conversation  = [
             {"role": "system",
             "content": [{"type": "text", "text": sys_prompt}]},
             {"role": "user",
             "content": [{"type": "image"}, {"type": "text", "text": user_prompt}]},
         ]
+
+        USE_AUDIO_IN_VIDEO = False
+        text = processor.apply_chat_template(conversation, add_generation_prompt=True, tokenize=False)
+        audios, images, videos = process_mm_info(conversation, use_audio_in_video=USE_AUDIO_IN_VIDEO)
+        inputs = processor(text=text, audio=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=USE_AUDIO_IN_VIDEO)
+        inputs = inputs.to(model.device).to(model.dtype)
+        print(inputs)
+
+        text_ids = model.generate(**inputs)
+        text = processor.batch_decode(text_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)
+        print(text)
+        raise NotImplementedError
+
         inputs = processor(text=messages, images=img, return_tensors="pt", padding=True)
         inputs = inputs.to(model.device).to(model.dtype)
         outputs = model.generate(**inputs)

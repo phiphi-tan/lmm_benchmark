@@ -12,12 +12,13 @@ models = [
             # "Qwen/Qwen2-VL-7B-Instruct",
 
             # "Qwen/Qwen2.5-Omni-7B",
+            "Qwen/Qwen2.5-Omni-3B",
 
             # "google/gemma-3-4b-it",
             # "HuggingFaceTB/SmolVLM2-2.2B-Instruct",
             # "HuggingFaceTB/SmolVLM-Instruct",
             # "HuggingFaceTB/SmolVLM-500M-Instruct",
-            "HuggingFaceTB/SmolVLM-256M-Instruct",
+            # "HuggingFaceTB/SmolVLM-256M-Instruct",
             # "HuggingFaceTB/SmolVLM2-500M-Video-Instruct",
 ]
 
