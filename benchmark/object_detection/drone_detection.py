@@ -19,7 +19,7 @@ system_prompt = "You are a drone detection tool tool. Your ONLY function is to p
 global_user_prompt = "Analyze the image and respond with ONLY the normalised corner-coordinates of the drone in square brackets ONLY. Give the shortest answer possible." # set to None if passing individual prompts
 sys_user_prompt = [system_prompt, global_user_prompt]
 
-metric_type = "bbox"
+metric_type = "bbox_iou"
 
 #----- data preparation function -----
 
