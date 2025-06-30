@@ -80,7 +80,7 @@ inputs, predictions, evaluations = run_benchmark(prep_data=prep_data, data_info=
                                                 models=models, sys_user_prompts=sys_user_prompt,
                                                 edit_predictions=edit_predictions, metric_type=metric_type)
 show_results(inputs, predictions, evaluations)
-# show_differences(inputs, predictions, input_normal=False)
+show_differences(inputs, predictions, input_normal=False)
 
 
     
