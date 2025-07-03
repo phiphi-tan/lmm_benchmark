@@ -8,7 +8,7 @@ models = get_models()
 
 dataset_path = "MiXaiLL76/TextOCR_OCR"
 dataset_split = "train"
-sample_size = 3
+sample_size = 256
 data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "You are an optical character recognition (OCR) tool. Your ONLY function is to process an input image and output the text shown."\

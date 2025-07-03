@@ -3,12 +3,14 @@ from .benchmark_tools import *
 
 def show_differences(inputs, predictions, input_normal=False):
     img_list, _, ref_list = split_inputs(inputs)
+    print(predictions)
     for i in range(len(img_list)):
         new_img = draw_bboxes(img_list[i], ref_list[i], colour='red', normalised=input_normal)
 
         for key, val in predictions.items():
             if is_valid_bbox(val[i]):
-                new_img = draw_bboxes(new_img, [val[i]], colour='blue', label=key, normalised=True)
+                new_img = draw_bboxes(new_img, val[i], colour='blue', label=key, normalised=False)
+
         new_img.show()
         # display(new_img)
 

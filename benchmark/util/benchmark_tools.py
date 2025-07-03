@@ -59,16 +59,10 @@ def run_benchmark(prep_data, data_info, models, sys_user_prompts, metric_type, e
     return inputs, predictions, model_results
 
 def get_omni_predictions(model_name, img_list, qn_list, sys_prompt, global_user_prompt=None):
-    # We recommend enabling flash_attention_2 for better acceleration and memory saving.
-    model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
-        model_name,
-        torch_dtype="auto",
-        device_map="auto",
-        attn_implementation="flash_attention_2",
-    )
-    model.disable_talker()
-
+    print("Obtaining predictions from {}".format(model_name))
+    model = Qwen2_5OmniForConditionalGeneration.from_pretrained(model_name, torch_dtype=torch.bfloat16, device_map="auto")
     processor = Qwen2_5OmniProcessor.from_pretrained(model_name)
+    model.disable_talker()
 
     data_size = len(img_list)
     prediction_list = [None for _ in range(data_size)]
@@ -82,59 +76,27 @@ def get_omni_predictions(model_name, img_list, qn_list, sys_prompt, global_user_
         else:
             user_prompt = global_user_prompt
 
-        conversation  = [
+        messages = [
             {"role": "system",
             "content": [{"type": "text", "text": sys_prompt}]},
             {"role": "user",
-            "content": [{"type": "image"}, {"type": "text", "text": user_prompt}]},
+            "content": [{"type": "image", "image": img},
+                        {"type": "text", "text": user_prompt}]},
         ]
 
-        USE_AUDIO_IN_VIDEO = False
-        text = processor.apply_chat_template(conversation, add_generation_prompt=True, tokenize=False)
-        audios, images, videos = process_mm_info(conversation, use_audio_in_video=USE_AUDIO_IN_VIDEO)
-        inputs = processor(text=text, audio=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=USE_AUDIO_IN_VIDEO)
+        text = processor.apply_chat_template(messages, add_generation_prompt=True, tokenize=False)
+        _, images, _ = process_mm_info(messages, use_audio_in_video=False)
+        inputs = processor(text=text, images=images, return_tensors="pt", padding=True)
         inputs = inputs.to(model.device).to(model.dtype)
-        print(inputs)
+        input_length = inputs.input_ids.shape[1]
 
-        text_ids = model.generate(**inputs)
-        text = processor.batch_decode(text_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)
-        print(text)
-        raise NotImplementedError
-
-        inputs = processor(text=messages, images=img, return_tensors="pt", padding=True)
-        inputs = inputs.to(model.device).to(model.dtype)
-        outputs = model.generate(**inputs)
-
-        print(outputs)
-        raise NotImplementedError
-        prediction = outputs[0]['generated_text']
+        # Inference: Generation of the output text and audio
+        text_ids = model.generate(**inputs, return_audio=False)
+        prediction = processor.batch_decode(text_ids[:, input_length:], skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+        print(prediction)
         prediction_list[i] = prediction
 
     return prediction_list
-
-
-
-    # Preparation for inference
-    text = processor.apply_chat_template(conversation, add_generation_prompt=True, tokenize=False)
-    audios, images, videos = process_mm_info(conversation, use_audio_in_video=USE_AUDIO_IN_VIDEO)
-    inputs = processor(text=text, audio=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=USE_AUDIO_IN_VIDEO)
-    inputs = inputs.to(model.device).to(model.dtype)
-
-    # Inference: Generation of the output text and audio
-    text_ids, audio = model.generate(**inputs, use_audio_in_video=USE_AUDIO_IN_VIDEO)
-
-    text = processor.batch_decode(text_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)
-    print(text)
-    sf.write(
-        "output.wav",
-        audio.reshape(-1).detach().cpu().numpy(),
-        samplerate=24000,
-    )
-
-
-
-
-
 
 
 # returns output_list
@@ -177,6 +139,6 @@ def eval_results(ref_list, pred_list, metric_type):
     print("Evaluating predictions")
     eval_metric = evaluate.load(metric_type)
     results = eval_metric.compute(references=ref_list, predictions=pred_list)
-    return_result = round(results[metric_type], 2)
+    return_result = round(results[metric_type], 3)
     return return_result
 

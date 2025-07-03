@@ -9,7 +9,7 @@ models = get_models()
 
 dataset_path = "vikhyatk/tallyqa-test"
 dataset_split = "test"
-sample_size = 1
+sample_size = 256
 data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "You are an object counting tool, and you can ONLY reply in numbers "\
@@ -32,12 +32,12 @@ def prep_data(ds_path, ds_split, split_size=None):
     print("Filtered Dataset: {}".format(ds))
 
     if split_size is not None:
-        # ds = ds.shuffle() # for random selection
-        input_dataset = ds.select(range(split_size))
+        shuffled_ds = ds.shuffle(seed=split_size) # for random selection
+        input_dataset = shuffled_ds.select(range(split_size))
     else: 
         input_dataset = ds
 
-    print("Sampled Dataset: {}".format(ds))
+    print("Sampled Dataset: {}".format(input_dataset))
 
     image_list = input_dataset['image']
 

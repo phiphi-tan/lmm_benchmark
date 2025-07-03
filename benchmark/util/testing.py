@@ -2,9 +2,9 @@
 from transformers import Qwen2_5OmniForConditionalGeneration, Qwen2_5OmniProcessor
 from qwen_omni_utils import process_mm_info
 from datasets import load_dataset
-
+import torch
 # default: Load the model on the available device(s)
-model = Qwen2_5OmniForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-Omni-3B", torch_dtype="auto", device_map="auto")
+model = Qwen2_5OmniForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-Omni-3B", torch_dtype=torch.bfloat16, device_map="auto")
 
 # # We recommend enabling flash_attention_2 for better acceleration and memory saving.
 # model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
@@ -50,24 +50,17 @@ conversation = [
 
 # Preparation for inference
 text = processor.apply_chat_template(conversation, add_generation_prompt=True, tokenize=False)
-print(text)
-
 audios, images, videos = process_mm_info(conversation, use_audio_in_video=False)
-print(images)
 
 inputs = processor(text=text, images=images, return_tensors="pt", padding=True)
-print(inputs)
 inputs = inputs.to(model.device).to(model.dtype)
+input_length = inputs.input_ids.shape[1]
 
-print(inputs)
 
 # Inference: Generation of the output text and audio
 print('generating output')
 
 text_ids = model.generate(**inputs, return_audio=False)
-print(text_ids)
-raise NotImplementedError
-
-text = processor.batch_decode(text_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)
+text = processor.batch_decode(text_ids[:, input_length:], skip_special_tokens=True, clean_up_tokenization_spaces=False)
 print(text)
 

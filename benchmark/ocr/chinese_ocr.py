@@ -8,7 +8,7 @@ models = get_models()
 
 dataset_path = "SWHL/ChineseOCRBench"
 dataset_split = "test"
-sample_size = 3
+sample_size = 64
 data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "You are a chinese optical character recognition (OCR) tool. Output ONLY the exact answer to the question about the input image." \
@@ -23,9 +23,13 @@ metric_type = "exact_match"
 def prep_data(ds_path, ds_split, split_size=None):
     print("Preparing data with size: {}".format(split_size))
     ds = load_dataset(ds_path, split=ds_split)
+    print("Original Dataset: {}".format(ds))
+
+    ds = ds.filter(lambda row: row["image"].height >= 28 and row["image"].width >= 28)
+    print("Filtered Dataset: {}".format(ds))
 
     if split_size is not None:
-        shuffled_ds = ds.shuffle() # for random selection
+        shuffled_ds = ds.shuffle(seed=split_size) # for random selection
         input_dataset = shuffled_ds.select(range(split_size))
     else: 
         input_dataset = ds

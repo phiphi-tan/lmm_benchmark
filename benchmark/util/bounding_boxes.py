@@ -12,21 +12,28 @@ def fix_bbox(bbox):
     
     return [x1, y1, x2, y2]
 
-def draw_bboxes(image, bbox_list, colour='red', label='', normalised=False):
+def coco_bbox(bbox):
+    x1, y2, w, h = bbox
+
+    x2 = x1 + w
+    y1 = y2 + h
+
+    return fix_bbox([x1, y1, x2, y2])
+
+def draw_bboxes(image, bbox, colour='red', label='', normalised=False):
     new_image = image.copy()
     draw = ImageDraw.Draw(new_image)
     img_width, img_height = new_image.size
 
-    for bbox in bbox_list:
-        text_x = bbox[0]
-        text_y = bbox[1]
+    text_x = bbox[0]
+    text_y = bbox[1]
 
-        if normalised:
-            bbox = [bbox[0]*img_width, bbox[1]*img_height, bbox[2]*img_width, bbox[3]*img_height]
-            text_x = bbox[0]*img_width
-            text_y = bbox[1]*img_height
-        draw.rectangle(bbox, outline=colour, width=3)
-        draw.text((text_x, text_y), label, fill=colour)
+    if normalised:
+        bbox = [bbox[0]*img_width, bbox[1]*img_height, bbox[2]*img_width, bbox[3]*img_height]
+        text_x = bbox[0]*img_width
+        text_y = bbox[1]*img_height
+    draw.rectangle(bbox, outline=colour, width=3)
+    draw.text((text_x, text_y), label, fill=colour)
     return new_image
 
 def eval_bbox(ref_list, img_list, pred_list):
@@ -37,25 +44,26 @@ def eval_bbox(ref_list, img_list, pred_list):
         img = img_list[i]
         img_width, img_height = img.size
 
-        pred_bbox = pred_list[i] # normalised values
+        pred_bbox = pred_list[i]
 
         if not is_valid_bbox(pred_bbox):
             iou = 0
         else:
             pred_bbox = [pred_bbox[0]*img_width, pred_bbox[1]*img_height, pred_bbox[2]*img_width, pred_bbox[3]*img_height]
-
             iou = intersection_over_union(ref_bbox, pred_bbox)
-            iou = round(iou, 2)
+            iou = round(iou, 4)
         eval.append(iou)
     
-    return eval
+    avg_iou = round(sum(eval) / len(eval), 2)
+
+    return avg_iou, eval
 
 # bbox should be list of format: [x1, y1, x2, y2]
 def is_valid_bbox(bbox):
     if not isinstance(bbox, list): return False
     if len(bbox) != 4: return False
     for x in bbox:
-        if not isinstance(x, float): return False
+        if not (isinstance(x, float) or isinstance(x, int)): return False
     return True
 
 # taken from LLM

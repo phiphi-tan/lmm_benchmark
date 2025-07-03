@@ -1,6 +1,6 @@
 from ..util.benchmark_tools import run_benchmark
 from ..util.displays import show_individual, show_differences, show_results
-from ..util.bounding_boxes import fix_bbox
+from ..util.bounding_boxes import fix_bbox, coco_bbox
 from ..util.benchmark_models import get_models
 import ast
 from datasets import load_dataset
@@ -13,9 +13,9 @@ dataset_split = "train"
 sample_size = 3
 data_info = [dataset_path, dataset_split, sample_size]
 
-system_prompt = "You are a weapon detection tool tool. Your ONLY function is to provide the normalised coordinates of detected weapons in a corner-coordinates bounding box format."\
+system_prompt = "You are a weapon detection tool tool. Your ONLY function is to provide the  coordinates of detected weapons in a corner-coordinates bounding box format."\
 "Do not provide any explanation or introductory text."
-global_user_prompt = "Analyze the image and respond with ONLY the normalised corner-coordinates of the weapon in square brackets ONLY. Give the shortest answer possible." # set to None if passing individual prompts
+global_user_prompt = "Analyze the image and respond with ONLY the corner-coordinates of the weapon in square brackets ONLY. Give the shortest answer possible." # set to None if passing individual prompts
 sys_user_prompt = [system_prompt, global_user_prompt]
 
 metric_type = "bbox_iou"
@@ -48,7 +48,7 @@ def prep_data(ds_path, ds_split, split_size):
     print(image_list)
     print(ref_data_list)
 
-    ref_data_list = [fix_bbox(bbox[0]) for bbox in ref_data_list]
+    ref_data_list = [coco_bbox(bbox[0]) for bbox in ref_data_list]
     print(ref_data_list)
 
     return image_list, question_data_list, ref_data_list 
@@ -65,7 +65,7 @@ def edit_predictions(predictions):
         for p in pred:
             try:
                 new_pred.append(ast.literal_eval(p))
-            except (SyntaxError):
+            except:
                 new_pred.append(p)
         
         print(new_pred)
