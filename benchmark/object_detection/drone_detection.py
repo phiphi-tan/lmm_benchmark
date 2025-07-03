@@ -1,7 +1,7 @@
 from ..util.benchmark_tools import run_benchmark
 from ..util.displays import show_individual, show_differences, show_results
 from ..util.benchmark_models import get_models
-from ..util.bounding_boxes import fix_bbox
+from ..util.bounding_boxes import fix_bbox, coco_bbox
 
 import ast
 from datasets import load_dataset, Dataset
@@ -11,7 +11,7 @@ models = get_models()
 
 dataset_path = "pathikg/drone-detection-dataset"
 dataset_split = "test"
-sample_size = 3
+sample_size = 64
 data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "You are a drone detection tool tool. Your ONLY function is to provide the normalised coordinates of detected drones in a corner-coordinates bounding box format."\
@@ -49,7 +49,7 @@ def prep_data(ds_path, ds_split, split_size):
     print(image_list)
     print(ref_data_list)
 
-    ref_data_list = [fix_bbox(bbox[0]) for bbox in ref_data_list]
+    ref_data_list = [coco_bbox(bbox[0]) for bbox in ref_data_list]
     print(ref_data_list)
 
     return image_list, question_data_list, ref_data_list 
@@ -66,7 +66,7 @@ def edit_predictions(predictions):
         for p in pred:
             try:
                 new_pred.append(ast.literal_eval(p))
-            except (SyntaxError):
+            except:
                 new_pred.append(p)
         
         print(new_pred)
