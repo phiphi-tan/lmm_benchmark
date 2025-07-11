@@ -8,7 +8,7 @@ models = get_models()
 
 dataset_path = "MiXaiLL76/TextOCR_OCR"
 dataset_split = "train"
-sample_size = 256
+sample_size = 64
 data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "You are an optical character recognition (OCR) tool. Your ONLY function is to process an input image and output the text shown."\
@@ -25,8 +25,8 @@ def prep_data(ds_path, ds_split, split_size=None):
     ds = load_dataset(ds_path, split=ds_split)
 
     if split_size is not None:
-        shuffled_ds = ds.shuffle() # for random selection
-        input_dataset = shuffled_ds.select(range(split_size))
+        # ds = ds.shuffle(seed=split_size) # for random selection
+        input_dataset = ds.select(range(split_size))
     else: 
         input_dataset = ds
 

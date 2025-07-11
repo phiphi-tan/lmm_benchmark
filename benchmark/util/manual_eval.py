@@ -1,17 +1,42 @@
 from .benchmark_tools import eval_results
+from .bounding_boxes import eval_bbox
 from word2number import w2n
 import ast
+from datasets import load_dataset, Dataset
+
+# dataset_path = "pathikg/drone-detection-dataset"
+# dataset_split = "test"
+# sample_size = 1
+# ds = load_dataset(dataset_path, split=dataset_split)
+
+# print("Original Dataset: {}".format(ds))
+# # filter for only single-drone detection
+# ds = ds.filter(lambda row: len(row['objects']['category']) == 1)
+# print("Filtered Dataset: {}".format(ds))
+# shuffled_ds = ds.shuffle(seed=sample_size) # for random selection
+# input_dataset = shuffled_ds.select(range(sample_size))
+
+# image_list = input_dataset['image'] # get list of images
+# ref_data_list = input_dataset['objects'] # get list of answers
+# ref_data_list = [r['bbox'] for r in ref_data_list]
+
+# print(input_dataset)
+# print(image_list)
+# print(ref_data_list)
+
+ref_list = ['1', '1', '1', '1', '1', '4', '1', '1', '2', '2', '1', '1', '1', '6', '2', '1', '3', '1', '2', '3', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '2', '1', '1', '1', '1', '1', '1', '3', '1', '2', '1', '2', '2', '1', '2', '1', '1', '2', '2', '2', '1', '1', '1', '1', '1', '1', '1', '1', '4', '2', '2', '2']
+
+pred_list = ['1', '1', 'one', 'One', '1', '4', '1', '1', 'one', 'two', '1', 'One', 'one', '7', '2', '1', 'three', 'one', '2', 'three', 'two', 'One', 'One', '1', 'one', '1', '1', 'One', '1', '1', '1', '1', 'two', '1', '1', 'One', '1', '1', '1', 'two', '1', '2', '1', '2', '2', 'one', 'two', 'One', '2', '1', 'two', 'two', 'One', 'one', 'one', 'One', '1', '1', 'one', '1', '1', '2', 'two', '2']
 
 
-ref_list =    ['1', '1', '2', '4', '1', '1', '1', '2', '2', '3', '1', '2', '3', '2', '1', '1', '1', '1', '1', '4', '1', '1', '1', '1', '2', '1', '1', '1', '2', '1', '5', '1', '1', '1', '2', '7', '1', '2', '2', '2', '1', '2', '2', '1', '3', '3', '3', '1', '1', '1', '2', '0', '1', '1', '2', '4', '1', '4', '1', '2', '7', '1', '2', '14', '2', '3', '1', '2', '1', '8', '0', '1', '1', '1', '1', '1', '2', '1', '1', '1', '1', '1', '1', '1', '2', '2', '4', '1', '1', '3', '1', '1', '1', '1', '1', '1', '1', '1', '2', '1', '1', '1', '1', '1', '4', '1', '3', '1', '7', '1', '5', '0', '0', '4', '1', '1', '1', '1', '2', '1', '1', '1', '1', '2', '1', '4', '1', '1', '3', '1', '1', '1', '1', '1', '1', '2', '1', '1', '2', '1', '1', '2', '1', '8', '1', '1', '3', '2', '4', '1', '2', '5', '1', '1', '1', '1', '1', '2', '2', '1', '1', '1', '4', '1', '2', '1', '13', '1', '2', '5', '1', '1', '5', '1', '1', '2', '1', '1', '1', '0', '1', '4', '1', '2', '2', '7', '2', '1', '1', '2', '0', '1', '1', '1', '1', '1', '1', '5', '2', '2', '1', '2', '1', '2', '1', '1', '1', '5', '1', '8', '1', '1', '1', '1', '5', '1', '1', '1', '1', '1', '2', '2', '1', '1', '1', '3', '1', '1', '1', '2', '5', '1', '2', '3', '3', '1', '1', '2', '1', '2', '3', '1', '1', '1', '1', '1', '1', '2', '1', '1', '2', '2', '1', '6', '3', '1']
-
-pred_list =  ['1', '1', 'two', 'Three', '1', 'One', 'One', '2', '2', 'two', 'one', 'two', 'two', '1', '1', '0', 'One', 'One', '1', '4', '1', '1', 'One', 'two', '2', '1', '1', 'One', '2', 'One', '5', '1', '1', '1', 'two', 'two', '1', 'One', 'two', '2', 'one', '2', '2', '1', 'three', '3', '2', 'one', 'One', 'One', '2', '0', 'One', '1', 'two', 'four', '1', '4', '1', 'two', 'seven', 'one', '2', '11', '2', '3', '1', 'two', '1', 'five', 'zero', 'One', 'one', 'one', 'one', '1', '2', 'one', 'two', 'One', 'One', '1', '1', '1', 'One', 'two', '2', 'one', '1', '3', '1', 'two', 'One', '1', 'One', 'One', '1', 'One', 'two', '1', '1', '1', 'One', '1', 'four', 'One', '3', '1', '7', '1', '4', '0', '0', '3', '1', 'one', '1', 'One', '2', '1', 'One', 'One', 'One', '2', '1', '4', 'One', 'one', '6', '1', '1', 'one', '1', '1', '1', '4', 'two', 'One', 'two', 'One', 'one', 'two', '1', '7', 'One', '1', '3', '2', '4', '1', 'Two', '5', '1', 'One', 'One', '1', '2', '2', '0', 'one', 'One', '1', 'three', 'one', 'one', 'one', 'five', '1', '2', 'four', 'One', 'One', '4', '1', 'One', 'two', '1', '2', '1', '0', '1', '4', '1', '2', '2', 'six', 'two', '1', '1', '2', '0', 'One', 'two', '1', '1', '1', 'one', '4', 'two', '2', 'one', 'two', 'One', 'Two', '1', 'One', 'one', '4', '1', '4', '1', '1', '1', '1', 'five', 'One', '1', '0', '1', '0', '2', '2', 'One', '1', '1', '3', '1', '1', 'One', '2', '5', 'one', 'two', '3', 'three', '1', '1', '2', 'One', 'two', 'three', '1', '1', '1', '1', 'two', '1', '2', '1', '1', '2', '2', 'one', '7', 'three', 'One']
+# print(eval_bbox(ref_list, pred_list, normalise=True, img_list=image_list))
+# ref_list = [s.upper() for s in ref_list]
+# pred_list = [s.upper() for s in pred_list]
 
 pred_list = [str(w2n.word_to_num(i)) for i in pred_list]
-# pred_list = [i.strip() for i in pred_list]
-print(pred_list)
 
 print(eval_results(ref_list, pred_list, 'exact_match'))
+# print(eval_results(ref_list, pred_list, 'bbox_iou'))
 
 # score_list = [0.0, 0.0, 0.61, 0.0, 0.24, 0.48, 0.03, 0.0, 0.7, 0.54, 0.82, 0.85, 0.81, 0.89, 0.51, 0.0, 0.0, 0.61, 0.31, 0.0, 0.63, 0.84, 0.67, 0.58, 0.0, 0.78, 0.06, 0.54, 0.67, 0.75, 0.51, 0.57, 0.55, 0.34, 0.88, 0.0, 0.15, 0.43, 0.54, 0.0, 0.81, 0.62, 0.1, 0.0, 0.82, 0.65, 0.74, 0.4, 0.0, 0.38, 0.75, 0.59, 0.49, 0.0, 0.0, 0.84, 0.0, 0.0, 0.0, 0.89, 0.78, 0.0, 0.75, 0.77] 
 # avg = sum(score_list) / len(score_list)

@@ -36,20 +36,20 @@ def draw_bboxes(image, bbox, colour='red', label='', normalised=False):
     draw.text((text_x, text_y), label, fill=colour)
     return new_image
 
-def eval_bbox(ref_list, img_list, pred_list):
+def eval_bbox(ref_list, pred_list, normalise=False, img_list=None):
     eval = []
     for i in range(len(ref_list)):
         ref_bbox = ref_list[i]
-
-        img = img_list[i]
-        img_width, img_height = img.size
-
         pred_bbox = pred_list[i]
-
+        
         if not is_valid_bbox(pred_bbox):
             iou = 0
         else:
-            pred_bbox = [pred_bbox[0]*img_width, pred_bbox[1]*img_height, pred_bbox[2]*img_width, pred_bbox[3]*img_height]
+            if normalise==True:
+                img = img_list[i]
+                img_width, img_height = img.size
+                pred_bbox = [pred_bbox[0]*img_width, pred_bbox[1]*img_height, pred_bbox[2]*img_width, pred_bbox[3]*img_height]
+
             iou = intersection_over_union(ref_bbox, pred_bbox)
             iou = round(iou, 4)
         eval.append(iou)

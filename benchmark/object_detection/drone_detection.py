@@ -14,9 +14,9 @@ dataset_split = "test"
 sample_size = 64
 data_info = [dataset_path, dataset_split, sample_size]
 
-system_prompt = "You are a drone detection tool tool. Your ONLY function is to provide the normalised coordinates of detected drones in a corner-coordinates bounding box format."\
+system_prompt = "You are a drone detection tool tool. Your ONLY function is to provide the coordinates of detected drones in a corner-coordinates bounding box format."\
 "Do not provide any explanation or introductory text."
-global_user_prompt = "Analyze the image and respond with ONLY the normalised corner-coordinates of the drone in square brackets ONLY. Give the shortest answer possible." # set to None if passing individual prompts
+global_user_prompt = "Analyze the image and respond with ONLY the corner-coordinates of the drone in square brackets ONLY. Give the shortest answer possible." # set to None if passing individual prompts
 sys_user_prompt = [system_prompt, global_user_prompt]
 
 metric_type = "bbox_iou"

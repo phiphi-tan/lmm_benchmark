@@ -8,11 +8,11 @@ models = get_models()
 
 dataset_path = "SWHL/ChineseOCRBench"
 dataset_split = "test"
-sample_size = 64
+sample_size = 32
 data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "You are a chinese optical character recognition (OCR) tool. Output ONLY the exact answer to the question about the input image." \
-"Answer briefly -- give the shortest answer possible (a word or phrase) with no translation."
+"Answer briefly in Chinese -- give the shortest answer possible (a word or phrase) with no translation."
 global_user_prompt = None # set to None if passing individual prompts
 sys_user_prompt = [system_prompt, global_user_prompt]
 

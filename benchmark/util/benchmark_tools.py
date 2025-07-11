@@ -49,7 +49,7 @@ def run_benchmark(prep_data, data_info, models, sys_user_prompts, metric_type, e
         if metric_type == "llm_aaj":
             evaluation = judge_captions(model, img_list, ref_list, prediction_list)
         if metric_type == "bbox_iou":
-            evaluation = eval_bbox(ref_list, img_list, prediction_list)
+            evaluation = eval_bbox(ref_list, prediction_list, img_list=img_list, normalise=True)
         else:
             evaluation = eval_results(ref_list=ref_list,pred_list=prediction_list, metric_type=metric_type)
             
@@ -91,7 +91,7 @@ def get_omni_predictions(model_name, img_list, qn_list, sys_prompt, global_user_
         input_length = inputs.input_ids.shape[1]
 
         # Inference: Generation of the output text and audio
-        text_ids = model.generate(**inputs, return_audio=False)
+        text_ids = model.generate(**inputs, return_audio=False, max_new_tokens=15)
         prediction = processor.batch_decode(text_ids[:, input_length:], skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
         print(prediction)
         prediction_list[i] = prediction
@@ -126,7 +126,7 @@ def get_predictions(model, img_list, qn_list, sys_prompt, global_user_prompt=Non
 
         output = pipe(images=img,
                     text=messages,
-                    generate_kwargs={"max_new_tokens": 50},
+                    generate_kwargs={"max_new_tokens": 30},
                     return_full_text=False)
 
         prediction = output[0]['generated_text']

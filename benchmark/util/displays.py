@@ -9,7 +9,7 @@ def show_differences(inputs, predictions, input_normal=False):
 
         for key, val in predictions.items():
             if is_valid_bbox(val[i]):
-                new_img = draw_bboxes(new_img, val[i], colour='blue', label=key, normalised=False)
+                new_img = draw_bboxes(new_img, val[i], colour='blue', label=key, normalised=True)
 
         new_img.show()
         # display(new_img)
