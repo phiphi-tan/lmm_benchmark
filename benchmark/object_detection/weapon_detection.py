@@ -10,7 +10,7 @@ models = get_models()
 
 dataset_path = "KIRANKALLA/weaponds"
 dataset_split = "train"
-sample_size = 3
+sample_size = 64
 data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "You are a weapon detection tool tool. Your ONLY function is to provide the  coordinates of detected weapons in a corner-coordinates bounding box format."\
@@ -80,7 +80,7 @@ inputs, predictions, evaluations = run_benchmark(prep_data=prep_data, data_info=
                                                 models=models, sys_user_prompts=sys_user_prompt,
                                                 edit_predictions=edit_predictions, metric_type=metric_type)
 show_results(inputs, predictions, evaluations)
-show_differences(inputs, predictions, input_normal=False)
+# show_differences(inputs, predictions, input_normal=False)
 
 
     
