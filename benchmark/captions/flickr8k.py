@@ -9,7 +9,7 @@ models = get_models()
 
 dataset_path = "Naveengo/flickr8k"
 dataset_split = "train"
-sample_size = 3
+sample_size = 64
 data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "You are an image caption tool. Your task is generate captions for a given input image."\
@@ -26,7 +26,7 @@ def prep_data(ds_path, ds_split, split_size=None):
     ds = load_dataset(ds_path, split=ds_split)
 
     if split_size is not None:
-        shuffled_ds = ds.shuffle() # for random selection
+        shuffled_ds = ds.shuffle(seed=split_size) # for random selection
         input_dataset = shuffled_ds.select(range(split_size))
     else: 
         input_dataset = ds
@@ -52,6 +52,7 @@ def edit_predictions(predictions):
 inputs, predictions, evaluations = run_benchmark(prep_data=prep_data, data_info=data_info,
                                                 models=models, sys_user_prompts=sys_user_prompt,
                                                 metric_type=metric_type)
-show_individual(inputs, predictions, judge_evaluations=evaluations)
 show_results(inputs, predictions, evaluations)
+# show_individual(inputs, predictions, judge_evaluations=evaluations)
+
     

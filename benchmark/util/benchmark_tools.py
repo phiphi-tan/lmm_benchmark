@@ -46,11 +46,15 @@ def run_benchmark(prep_data, data_info, models, sys_user_prompts, metric_type, e
 
     for model in predictions:
         prediction_list = predictions[model]
+        print('metric type is: {}'.format(metric_type))
+
         if metric_type == "llm_aaj":
+            print('Evaluating results through judge')
             evaluation = judge_captions(model, img_list, ref_list, prediction_list)
-        if metric_type == "bbox_iou":
-            evaluation = eval_bbox(ref_list, prediction_list, img_list=img_list, normalise=True)
+        elif metric_type == "bbox_iou":
+            evaluation = eval_bbox(ref_list, prediction_list, img_list=img_list, normalise=False)
         else:
+            print('Evaluating results with metric {}'.format(metric_type))
             evaluation = eval_results(ref_list=ref_list,pred_list=prediction_list, metric_type=metric_type)
             
         model_results[model] = evaluation

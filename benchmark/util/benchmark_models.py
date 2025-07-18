@@ -27,8 +27,8 @@ models = [
             # "Qwen/Qwen2.5-Omni-7B",
             # "Qwen/Qwen2.5-VL-7B-Instruct",
             # "llava-hf/llava-onevision-qwen2-7b-ov-hf",
-            "llava-hf/llava-v1.6-mistral-7b-hf",
-            # "llava-hf/llava-interleave-qwen-7b-hf",
+            # "llava-hf/llava-v1.6-mistral-7b-hf",
+            "llava-hf/llava-interleave-qwen-7b-hf",
             # "google/gemma-3-4b-it",
 ]
 

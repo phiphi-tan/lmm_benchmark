@@ -54,7 +54,7 @@ def eval_bbox(ref_list, pred_list, normalise=False, img_list=None):
             iou = round(iou, 4)
         eval.append(iou)
     
-    avg_iou = round(sum(eval) / len(eval), 2)
+    avg_iou = round(sum(eval) / len(eval), 3)
 
     return avg_iou, eval
 

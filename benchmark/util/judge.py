@@ -2,7 +2,7 @@ from transformers import pipeline
 
 # two-pass, returns both the scores as well as reasoning
 def judge_captions(model, img_list, ref_list, cand_list):
-
+    return 0
     data_size = len(img_list)
 
     judge_prompt = "Your task is to evaluate and rate the candidate caption on a scale of 0.0 to 1.0 based on the given Grading Criteria. " \
