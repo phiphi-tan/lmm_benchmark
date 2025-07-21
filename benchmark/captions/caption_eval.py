@@ -4,6 +4,7 @@ from ..util.benchmark_models import get_models
 from datasets import load_dataset
 from transformers import pipeline
 import torch
+from PIL import Image
 
 #----- hyperparameters -----
 
