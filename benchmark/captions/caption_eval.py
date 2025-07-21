@@ -1,4 +1,4 @@
-from ..util.benchmark_tools import run_benchmark, get_omni_predictions, get_predictions, split_inputs, split_prompts
+from ..util.benchmark_tools import run_benchmark, get_omni_predictions, split_inputs, split_prompts
 from ..util.displays import show_individual, show_differences, show_results
 from ..util.benchmark_models import get_models
 from datasets import load_dataset
@@ -11,18 +11,18 @@ models = get_models()
 
 dataset_path = "Naveengo/flickr8k"
 dataset_split = "train"
-sample_size = 1
+sample_size = 3
 data_info = [dataset_path, dataset_split, sample_size]
 
 system_prompt = "Your task is to evaluate and rate candidate captions on a scale of 0.0 to 1.0 based on the given Grading Criteria. " \
-        "(Print Real Number Score ONLY) " \
+        "(Print Real Number Score ONLY) \n" \
         "Grading Criteria:"\
         "0.0: The caption does not describe the image at all."\
         "1.0: The caption accurately and clearly describes the image."
 	
 
-global_user_prompt = "Reference Caption: {ref}" \
-        "Candidate Captions: {cand}" \
+global_user_prompt = "Reference Caption: {ref}\n "\
+        "Candidate Captions: {cand}\n" \
         "Score (Print a list of ONLY the decimal number): "
 
 generated_captions = {
@@ -85,6 +85,7 @@ def get_preds(model, img_list, answer_data_list):
             "content": [{"type": "image"}, {"type": "text", "text": user_prompt}]},
         ]
 
+        raise TypeError
         output = pipe(images=img,
                     text=messages,
                     generate_kwargs={"max_new_tokens": 30},
@@ -102,7 +103,7 @@ predictions = {}
 for model in models:
     img_list, qn_list, ref_list = split_inputs(inputs)
 
-    prediction_list = get_predictions(model=model, img_list=img_list, answer_data_list=ref_list)
+    prediction_list = get_preds(model=model, img_list=img_list, answer_data_list=ref_list)
 
     predictions[model] = prediction_list
 print("prediction_list ({}): {}".format(model, prediction_list))
