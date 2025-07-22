@@ -3,6 +3,9 @@ from ..util.displays import show_individual, show_differences, show_results
 from ..util.benchmark_models import get_models
 from datasets import load_dataset
 from transformers import pipeline
+from transformers import Qwen2_5OmniForConditionalGeneration, Qwen2_5OmniProcessor
+from qwen_omni_utils import process_mm_info
+
 import torch
 from PIL import Image
 
@@ -12,19 +15,19 @@ models = get_models()
 
 dataset_path = "Naveengo/flickr8k"
 dataset_split = "train"
-sample_size = 3
+sample_size = 64
 data_info = [dataset_path, dataset_split, sample_size]
 
-system_prompt = "Your task is to evaluate and rate candidate captions on a scale of 0.0 to 1.0 based on the given Grading Criteria. " \
-        "(Print Real Number Score ONLY) \n" \
+system_prompt = "Your task is to evaluate and rate the six candidate captions on a scale of 0.0 to 1.0 based on the given Grading Criteria. " \
+        "(Print a list of six real number scores ONLY) \n" \
         "Grading Criteria:"\
         "0.0: The caption does not describe the image at all."\
         "1.0: The caption accurately and clearly describes the image."
 	
 
 global_user_prompt = "Reference Caption: {ref}\n "\
-        "Candidate Captions: {cand}\n" \
-        "Score (Print a list of ONLY the decimal number): "
+        "List of Candidate Captions: {cand}\n" \
+        "Score (Print a list of the six decimal numbers): "
 
 generated_captions = {
         "google/gemma-3-4b-it":['Children playing soccer in a sandy field.', 'Man reading on a subway train', 'Black and white dog walking on the beach', 'Two dogs running on a grassy hill.', 'Snowboarder in mid-air over a snow ramp.', 'Golden retriever in water', 'Snowmobile on a snowy trail.', 'Two young girls playing together.', 'Two men on a mountain peak with a scenic view.', 'A boy sledding through deep snow.', 'People viewing a wall installation of portraits and lights.', 'Boys performing acrobatics on a trampoline outdoors.', 'Greyhounds racing at night.', 'A skier on a snowy slope.', 'Red dog running through waves.', 'Fencers practicing in a gymnasium.', 'Girl eating ice cream while sitting on a bicycle.', 'German Shepherd running on grass', 'A young person hanging upside down from a tree branch.', 'Skater jumps on a bridge.', 'Mountain biker riding through a forest.', 'Golden retriever running in the grass.', 'Boy eating ice cream cone outdoors.', 'Child skiing on a snowy trail', 'Two men walk along a path towards the ocean.', 'Baby eating yogurt with a spoon.', 'A young girl playing a guitar in a pink bedroom.', 'A black and white dog walking through the snow.', 'Dog in a yard covered in leaves', 'White dog running in a grassy field with a muzzle and collar.', 'A group of people posing with a large gray geometric shape in front of a building.', 'Football players stretching on the field.', 'Two women walking on a city street.', 'Man climbing a rock wall.', 'Motocross rider on a muddy trail.', 'A mouse and a badger costume are embracing in a public square with people in the background.', 'A woman and a man walking on a sidewalk.', 'Crowd at a concert raising their hands.', 'Muddy off-road vehicle stuck in the dirt.', 'Dog catching a frisbee in mid-air.', 'A man kayaking on a blue water surface.', 'Four dogs running through snow-covered grass.', 'Three children playing on a balustrade with a green ball.', 'Two men rappelling down a waterfall.', 'A girl jumping in the air outdoors.', 'Basketball player shooting a ball through the hoop.', 'A tan dog digging in the sand.', 'Two women in traditional kimonos and elaborate hairstyles walking on a stone pavement.', 'People walking past arches in a building.', 'A woman in a red devil costume poses next to a large, illuminated pillar at night.', 'Two children running through a fern garden.', 'Older man speaking into a microphone, with a younger man listening intently.', 'Skateboarder in mid-air on a steep hill.', 'Two girls wading in the water by a lake.', 'A golden retriever jumps over a brick wall.', 'Man cooking outdoors on a wooden bench.', 'Rock climber on a large rock at dusk.', 'Woman pointing with a hand.', 'A woman in a clown costume poses in a park with people in the background.', 'Boys playing soccer on a green field.', 'Two young girls in hats and dresses stand near a large tree on a grassy lawn.', 'Greyhounds racing at night.', 'Two figures with black balloons on a desert hillside under a blue sky.', 'Skater jumping over a building.'],
@@ -61,7 +64,7 @@ def all_model_caption(i):
     return_list = []
     for model, pred in generated_captions.items():
         return_list.append(pred[i])
-    print(return_list)
+    # print(return_list)
     return return_list
     
 def get_preds(model, img_list, answer_data_list):
@@ -75,7 +78,6 @@ def get_preds(model, img_list, answer_data_list):
     for i in range(data_size):
         print("Predicting sample {} of {}".format(i + 1, data_size))
         img = img_list[i]
-        # take prompt from qn_list is there is no global user_prompt
         user_prompt = global_user_prompt.format(ref=answer_data_list[i], cand=all_model_caption(i))
         print(user_prompt)
 
@@ -86,13 +88,51 @@ def get_preds(model, img_list, answer_data_list):
             "content": [{"type": "image"}, {"type": "text", "text": user_prompt}]},
         ]
 
-        raise TypeError
         output = pipe(images=img,
                     text=messages,
                     generate_kwargs={"max_new_tokens": 30},
                     return_full_text=False)
 
         prediction = output[0]['generated_text']
+        print("Prediction: {}".format(prediction))
+
+        prediction_list[i] = prediction
+
+    return prediction_list
+
+def get_omni_preds(model_name, img_list, answer_data_list):
+    print("Obtaining predictions from {}".format(model_name))
+    model = Qwen2_5OmniForConditionalGeneration.from_pretrained(model_name, torch_dtype=torch.bfloat16, device_map="auto")
+    processor = Qwen2_5OmniProcessor.from_pretrained(model_name)
+    model.disable_talker()
+
+    data_size = len(img_list)
+    prediction_list = [None for _ in range(data_size)]
+
+    for i in range(data_size):
+        print("Predicting sample {} of {}".format(i + 1, data_size))
+        img = img_list[i]
+        user_prompt = global_user_prompt.format(ref=answer_data_list[i], cand=all_model_caption(i))
+        print(user_prompt)
+
+        messages = [
+            {"role": "system",
+            "content": [{"type": "text", "text": system_prompt}]},
+            {"role": "user",
+            "content": [{"type": "image", "image": img},
+                        {"type": "text", "text": user_prompt}]},
+        ]
+
+        text = processor.apply_chat_template(messages, add_generation_prompt=True, tokenize=False)
+        _, images, _ = process_mm_info(messages, use_audio_in_video=False)
+        inputs = processor(text=text, images=images, return_tensors="pt", padding=True)
+        inputs = inputs.to(model.device).to(model.dtype)
+        input_length = inputs.input_ids.shape[1]
+
+        # Inference: Generation of the output text and audio
+        text_ids = model.generate(**inputs, return_audio=False, max_new_tokens=15)
+        prediction = processor.batch_decode(text_ids[:, input_length:], skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+        print("Prediction: {}".format(prediction))
         prediction_list[i] = prediction
 
     return prediction_list
@@ -104,10 +144,12 @@ predictions = {}
 for model in models:
     img_list, qn_list, ref_list = split_inputs(inputs)
 
-    prediction_list = get_preds(model=model, img_list=img_list, answer_data_list=ref_list)
-
+    if model == "Qwen/Qwen2.5-Omni-7B":
+        prediction_list = get_omni_preds(model_name=model, img_list=img_list, answer_data_list=ref_list)
+    else:
+        prediction_list = get_preds(model=model, img_list=img_list, answer_data_list=ref_list)
     predictions[model] = prediction_list
-print("prediction_list ({}): {}".format(model, prediction_list))
+    print("prediction_list ({}): {}".format(model, prediction_list))
 
 # show_individual(inputs, predictions, judge_evaluations=evaluations)
 
